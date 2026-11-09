@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://iwqngknjyolswbfkflii.supabase.co';
+  const supabaseKey = 'sb_publishable_thux2wg6hdfumeyctpm_w_ppCkr1';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محفوظ ڈرائیو - MAHFUZ DRIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+        body { background-color: #f4f6f8; color: #333; padding-bottom: 70px; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, #0b4d2c, #06311b); color: white; padding: 25px 15px 35px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .badge { background: rgba(255,255,255,0.15); font-size: 11px; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+        .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+        .header p { font-size: 12px; opacity: 0.9; }
+
+        /* Main Container */
+        .container { padding: 0 15px; margin-top: -20px; }
+
+        /* Card Section */
+        .card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+        .card-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #0b4d2c; display: flex; align-items: center; gap: 6px; }
+
+        /* Input Box */
+        textarea, input, select { width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; font-size: 13px; margin-bottom: 10px; outline: none; background: #fafafa; }
+        textarea:focus, input:focus { border-color: #0b4d2c; background: #fff; }
+        
+        .btn-green { background: #0b4d2c; color: white; width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .btn-green:hover { background: #083b21; }
+
+        /* Tabs */
+        .tabs { display: flex; background: #eee; border-radius: 8px; padding: 3px; margin-bottom: 15px; }
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; color: #666; }
+        .tab.active { background: #0b4d2c; color: white; }
+
+        /* Vehicles Grid */
+        .vehicle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .v-item { border: 1px solid #eee; border-radius: 10px; padding: 10px 5px; text-align: center; cursor: pointer; background: #fff; }
+        .v-item.active { border-color: #d4af37; background: #fffdf0; box-shadow: 0 0 0 1px #d4af37; }
+        .v-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .v-label { font-size: 11px; font-weight: 600; }
+
+        /* Area Tags */
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #f0f0f0; font-size: 11px; padding: 5px 10px; border-radius: 15px; color: #555; }
+
+        /* Bottom Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; }
+        .nav-item.active { color: #0b4d2c; }
+        .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+        /* Page Display Control */
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: HOME / BOOKING -->
+    <div id="page-home" class="page active">
+        <div class="header">
+            <span class="badge">🛡️ محفوظ و قابل اعتماد سروس</span>
+            <h1>محفوظ ڈرائیو ٹیکسی سروس</h1>
+            <p>ڈیرہ غازی خان، تونسہ شریف، کوٹ ادو، مظفر گڑھ اور ملتان میں آپ کی اپنی سواری</p>
+        </div>
+
+        <div class="container">
+            <!-- AI Box -->
+            <div class="card">
+                <div class="card-title">✨ اپنے الفاظ میں بتائیں</div>
+                <textarea rows="2" placeholder="مثال: کل صبح 8 بجے ہم 6 لوگ تونسہ شریف سے ملتان جانا چاہتے ہیں، سامان بھی ہے"></textarea>
+                <button class="btn-green">مناسب سواری تجویز کریں</button>
+            </div>
+
+            <!-- Booking Form Card -->
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab(this)">لوکل (شہر کے اندر)</div>
+                    <div class="tab" onclick="switchTab(this)">شہر سے شہر</div>
+                </div>
+
+                <div class="card-title">سواری منتخب کریں</div>
+                <div class="vehicle-grid">
+                    <div class="v-item" onclick="selectV(this)"><span class="v-icon">🏍️</span><span class="v-label">موٹر سائیکل</span></div>
+                    <div class="v-item" onclick="selectV(this)"><span class="v-icon">🛺</span><span class="v-label">پاسنجر رکشہ</span></div>
+                    <div class="v-item active" onclick="selectV(this)"><span class="v-icon">🚗</span><span class="v-label">کار</span></div>
+                    <div class="v-item" onclick="selectV(this)"><span class="v-icon">🚌</span><span class="v-label">منی بس</span></div>
+                </div>
+
+                <label style="font-size: 11px; font-weight: 600; color: #666; margin-bottom: 4px; display: block;">شہر</label>
+                <select>
+                    <option>ڈیرہ غازی خان</option>
+                    <option selected>تونسہ شریف</option>
+                    <option>کوٹ ادو</option>
+                    <option>مظفر گڑھ</option>
+                    <option>ملتان</option>
+                </select>
+
+                <input type="text" placeholder="آپ کا نام">
+                <input type="text" placeholder="پک اپ کی جگہ (مثلاً باکڑا چوک)">
+
+                <button class="btn-green" style="margin-top: 5px; background: #d4af37; color: #000;">ابھی بک کریں</button>
+            </div>
+
+            <!-- Areas Cover -->
+            <div class="card">
+                <div class="card-title">📍 ہمارے علاقے</div>
+                <div class="tags">
+                    <span class="tag">ڈیرہ غازی خان</span>
+                    <span class="tag">تونسہ شریف</span>
+                    <span class="tag">کوٹ ادو</span>
+                    <span class="tag">مظفر گڑھ</span>
+                    <span class="tag">ملتان</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: DRIVER REGISTRATION -->
+    <div id="page-driver" class="page">
+        <div class="header">
+            <h1>ڈرائیور رجسٹریشن</h1>
+            <p>محفوظ ڈرائیو کا حصہ بنیں اور اپنی گاڑی سے باوقار روزگار کمائیں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <input type="text" placeholder="مکمل نام">
+                <input type="text" placeholder="موبائل نمبر">
+                <input type="text" placeholder="شناختی کارڈ نمبر (CNIC)">
+                <select>
+                    <option>گاڑی کی قسم (کار / رکشہ / پک اپ / بائیک)</option>
+                    <option>کار</option>
+                    <option>رکشہ</option>
+                    <option>پک اپ 1 ٹن / 3 ٹن</option>
+                    <option>موٹرسائیکل</option>
+                </select>
+                <input type="text" placeholder="ڈرائیونگ لائسنس نمبر">
+                <button class="btn-green">درخواست جمع کریں</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: APP SETTINGS -->
+    <div id="page-settings" class="page">
+        <div class="header">
+            <h1>ایپ سیٹنگز</h1>
+            <p>اپنی ترجیحات اور ایپ کی سیٹنگز تبدیل کریں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">⚙️ جنرل سیٹنگز</div>
+                <div style="font-size: 13px; padding: 8px 0; border-bottom: 1px solid #eee;">زبان: <b>اردو</b></div>
+                <div style="font-size: 13px; padding: 8px 0; border-bottom: 1px solid #eee;">نوٹیفکیشنز: <b>آن</b></div>
+                <div style="font-size: 13px; padding: 8px 0;">ایپ ورژن: <b>v1.0.0 (MAHFUZ DRIVE)</b></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: COMPLAINTS -->
+    <div id="page-complaints" class="page">
+        <div class="header">
+            <h1>شکایات و تجاویز</h1>
+            <p>ہماری بہتری کے لیے اپنی رائے دیں یا شکایت درج کروائیں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <input type="text" placeholder="آپ کا نام">
+                <input type="text" placeholder="موبائل نمبر">
+                <textarea rows="4" placeholder="اپنی شکایت یا تجویز یہاں تفصیل سے لکھیں..."></textarea>
+                <button class="btn-green" style="background: #c0392b;">شکایت بھیجیں</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('page-home', this)"><span class="nav-icon">🏠</span>ہوم</div>
+        <div class="nav-item" onclick="showPage('page-driver', this)"><span class="nav-icon">🚗</span>ڈرائیور</div>
+        <div class="nav-item" onclick="showPage('page-settings', this)"><span class="nav-icon">⚙️</span>سیٹنگز</div>
+        <div class="nav-item" onclick="showPage('page-complaints', this)"><span class="nav-icon">⚠️</span>شکایات</div>
+    </div>
+
+    <script>
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+        }
+        function switchTab(el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.active;
+            el.classList.add('active');
+        }
+        function selectV(el) {
+            document.querySelectorAll('.v-item').forEach(v => v.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
+</body>
+</html>
