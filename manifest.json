@@ -1,20 +1,25 @@
 {
-  "name": "Mahfuz Drive",
+  "name": "Mahfuz Drive - محفوظ ڈرائیو",
   "short_name": "Mahfuz Drive",
+  "description": "Mahfuz Drive provides reliable and safe taxi services across Dera Ghazi Khan, Taunsa Sharif, Kot Addu, Muzaffargarh, and Multan.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0b4d2c",
+  "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
       "src": "icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
