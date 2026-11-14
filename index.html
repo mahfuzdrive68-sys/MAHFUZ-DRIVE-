@@ -4,6 +4,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
+
+  <script>
+  window.addEventListener('error', function(event) {
+    alert('JS Error: ' + event.message);
+  });
+  window.addEventListener('unhandledrejection', function(event) {
+    alert('Supabase Error: ' + (event.reason?.message || event.reason));
+  });
+                          </script>
   
 </script>
 
