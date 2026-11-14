@@ -186,23 +186,42 @@
     </div>
 
     <script>
-     async function submitRegistration() {
-  const name = document.getElementById('driverName').value;
-  const phone = document.getElementById('driverPhone').value;
-  const cnic = document.getElementById('driverCnic').value;
-  const license = document.getElementById('driverLicense').value;
+async function submitRegistration() {
+  try {
+    const name = document.getElementById('driverName').value.trim();
+    const phone = document.getElementById('driverPhone').value.trim();
+    const cnic = document.getElementById('driverCnic').value.trim();
+    const license = document.getElementById('driverLicense').value.trim();
 
-  const { data, error } = await supabase
-    .from('drivers')
-    .insert([{ name: name, phone: phone, cnic: cnic, license: license }]);
+    // چیک کریں کہ کوئی خانہ خالی تو نہیں ہے
+    if (!name || !phone || !cnic || !license) {
+      alert('براہ کرم رجسٹریشن مکمل کرنے کے لیے تمام خانے (نام، موبائل نمبر، شناختی کارڈ اور لائسنس) پُر کریں۔');
+      return;
+    }
 
-  if (error) {
-    alert('Error: ' + error.message);
-  } else {
-    alert('درخواست کامیابی سے بھیج دی گئی ہے!');
+    // ڈیٹا بیس میں خودکار طور پر ڈیٹا بھیجنا
+    const { data, error } = await supabase
+      .from('drivers')
+      .insert([{ name: name, phone: phone, cnic: cnic, license: license }]);
+
+    if (error) {
+      console.error('Supabase Error:', error.message);
+      alert('معذرت، اس وقت رجسٹریشن مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔');
+    } else {
+      // کامیابی کا خودکار پیغام اور فارم خالی کرنا
+      alert('مبارک ہو! آپ کی ڈرائیور رجسٹریشن کامیابی سے مکمل ہو گئی ہے۔');
+      
+      document.getElementById('driverName').value = '';
+      document.getElementById('driverPhone').value = '';
+      document.getElementById('driverCnic').value = '';
+      document.getElementById('driverLicense').value = '';
+    }
+  } catch (err) {
+    console.error('System Exception:', err.message);
+    alert('کچھ تکنیکی خرابی پیش آئی ہے، براہ کرم بعد میں کوشش کریں۔');
   }
-          }
-          
+      }
+      
         function showPage(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
