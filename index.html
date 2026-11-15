@@ -326,47 +326,49 @@
     </div>
 
     <script>
-        // Supabase Initialization
-        const SUPABASE_URL = 'https://iwqngknjyolswbfkflii.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_thux2wgD6hfdumeYctpm_w_T-ppCKr1';
-        let db = null;
-        try {
-            db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch (e) {
-            console.error("Supabase init error:", e);
+    // Supabase Initialization
+    const SUPABASE_URL = 'https://iwqngknjyolswbfkflii.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_thux2wgD6hfdumeYctpm_w_T-ppCKr1';
+    let db = null;
+    try {
+        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch (e) {
+        console.error("Supabase init error:", e);
+    }
+
+    let currentVehicle = 'Car';
+    let currentTripType = 'Local';
+
+    function openSection(secId, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(secId).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+    }
+
+    function setTripType(type) {
+        currentTripType = type;
+        const localTab = document.getElementById('tab-local');
+        const intercityTab = document.getElementById('tab-intercity');
+        if(localTab && intercityTab) {
+            localTab.classList.toggle('active', type === 'Local');
+            intercityTab.classList.toggle('active', type === 'Intercity');
         }
+    }
 
-        let currentVehicle = 'Car';
-        let currentTripType = 'Local';
+    function selectVehicle(el, vehicle) {
+        document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        currentVehicle = vehicle;
+    }
 
-        // Navigation Switcher
-        function openSection(secId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(secId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-        }
-
-        // Trip Type Switcher
-        function setTripType(type) {
-            currentTripType = type;
-            document.getElementById('tab-local').classList.toggle('active', type === 'Local');
-            document.getElementById('tab-intercity').classList.toggle('active', type === 'Intercity');
-        }
-
-        // Vehicle Selector
-        function selectVehicle(el, vehicle) {
-            document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            currentVehicle = vehicle;
-        }
-
-        // Language Switcher (Urdu / English)
-        function switchLanguage() {
-            const lang = document.getElementById('lang-switcher').value;
-            const htmlTag = document.getElementById('main-html');
-            
+    function switchLanguage() {
+        const switcher = document.getElementById('lang-switcher');
+        if (!switcher) return;
+        const lang = switcher.value;
+        const htmlTag = document.getElementById('main-html');
+        
+        if (htmlTag) {
             if (lang === 'en') {
                 htmlTag.setAttribute('lang', 'en');
                 htmlTag.setAttribute('dir', 'ltr');
@@ -376,90 +378,131 @@
                 htmlTag.setAttribute('dir', 'rtl');
                 document.body.classList.remove('en-mode');
             }
-
-            document.querySelectorAll('[data-ur]').forEach(el => {
-                el.innerText = el.getAttribute('data-' + lang);
-            });
         }
 
-        // AI Box Submit
-        async function handleAISubmit() {
-            const promptText = document.getElementById('ai-prompt').value.trim();
-            if (!promptText) {
-                alert('براہ کرم پہلے سفر کی تفصیل لکھیں! / Please enter trip details first!');
-                return;
-            }
-            if (!db) { alert('Database connection error.'); return; }
+        document.querySelectorAll('[data-ur]').forEach(el => {
+            el.innerText = el.getAttribute('data-' + lang);
+        });
+    }
 
-            const { error } = await db.from('Bookings').insert([{
-                name: 'AI Quick Request',
-                pickup_location: promptText,
-                city: document.getElementById('city-select').value,
-                vehicle_type: 'AI Suggested',
-                trip_type: 'AI Box'
-            }]);
-
-            if (error) {
-                alert('خرابی: ' + error.message);
-            } else {
-                alert('✅ آپ کی درخواست موصول ہو گئی ہے! ہمارا نمائندہ جلد رابطہ کرے گا۔');
-                document.getElementById('ai-prompt').value = '';
-            }
+    async function handleAISubmit() {
+        const promptEl = document.getElementById('ai-prompt');
+        const cityEl = document.getElementById('city-select');
+        if (!promptEl || !promptEl.value.trim()) {
+            alert('براہ کرم پہلے سفر کی تفصیل لکھیں! / Please enter trip details first!');
+            return;
         }
+        if (!db) { alert('Database connection error.'); return; }
 
-        // Main Booking Submit
-        async function handleBookingSubmit() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const pickup = document.getElementById('pickup-loc').value.trim();
-            const city = document.getElementById('city-select').value;
+        const { error } = await db.from('Bookings').insert([{
+            name: 'AI Quick Request',
+            pickup_location: promptEl.value.trim(),
+            city: cityEl ? cityEl.value : 'Not specified',
+            vehicle_type: 'AI Suggested',
+            trip_type: 'AI Box'
+        }]);
 
-            if (!name || !pickup) {
-                alert('براہ کرم اپنا نام اور پک اپ کی جگہ لکھیں! / Please enter your name and pickup location!');
-                return;
-            }
-            if (!db) { alert('Database connection error.'); return; }
-
-            const { error } = await db.from('Bookings').insert([{
-                name: name + (phone ? ' (' + phone + ')' : ''),
-                pickup_location: pickup,
-                city: city,
-                vehicle_type: currentVehicle,
-                trip_type: currentTripType
-            }]);
-
-            if (error) {
-                alert('خرابی: ' + error.message);
-            } else {
-                alert('✅ مبارک ہو! آپ کی سواری بک ہو گئی ہے۔');
-                document.getElementById('cust-name').value = '';
-                document.getElementById('cust-phone').value = '';
-                document.getElementById('pickup-loc').value = '';
-            }
+        if (error) {
+            alert('خرابی: ' + error.message);
+        } else {
+            alert('✅ آپ کی درخواست موصول ہو گئی ہے! ہمارا نمائندہ جلد رابطہ کرے گا۔');
+            promptEl.value = '';
         }
+    }
 
-        // Driver Registration Submit
-        async function handleDriverSubmit() {
-            const name = document.getElementById('drv-name').value.trim();
-            const phone = document.getElementById('drv-phone').value.trim();
-            const cnic = document.getElementById('drv-cnic').value.trim();
-            const vehicle = document.getElementById('drv-vehicle').value.trim();
-            const city = document.getElementById('drv-city').value.trim();
+    async function handleBookingSubmit() {
+        const nameEl = document.getElementById('cust-name');
+        const phoneEl = document.getElementById('cust-phone');
+        const pickupEl = document.getElementById('pickup-loc');
+        const cityEl = document.getElementById('city-select');
 
-            if (!name || !phone || !cnic) {
-                alert('براہ کرم نام، نمبر اور شناختی کارڈ لازمی درج کریں!');
-                return;
-            }
-            if (!db) { alert('Database connection error.'); return; }
+        if (!nameEl || !pickupEl || !nameEl.value.trim() || !pickupEl.value.trim()) {
+            alert('براہ کرم اپنا نام اور پک اپ کی جگہ لکھیں!');
+            return;
+        }
+        if (!db) { alert('Database connection error.'); return; }
 
-            const { error } = await db.from('Drivers').insert([{
-                name: name,
-                phone: phone,
-                cnic: cnic,
-                license: vehicle + ' - ' + city
-            }]);
+        const phoneVal = phoneEl ? phoneEl.value.trim() : '';
 
-            if (error) {
-                alert('خرابی: ' + error.message);
-            } else {
-                alert('✅ ڈرائیور رجسٹ
+        const { error } = await db.from('Bookings').insert([{
+            name: nameEl.value.trim() + (phoneVal ? ' (' + phoneVal + ')' : ''),
+            pickup_location: pickupEl.value.trim(),
+            city: cityEl ? cityEl.value : 'Not specified',
+            vehicle_type: currentVehicle,
+            trip_type: currentTripType
+        }]);
+
+        if (error) {
+            alert('خرابی: ' + error.message);
+        } else {
+            alert('✅ مبارک ہو! آپ کی سواری بک ہو گئی ہے۔');
+            nameEl.value = '';
+            if(phoneEl) phoneEl.value = '';
+            pickupEl.value = '';
+        }
+    }
+
+    async function handleDriverSubmit() {
+        const nameEl = document.getElementById('drv-name');
+        const phoneEl = document.getElementById('drv-phone');
+        const cnicEl = document.getElementById('drv-cnic');
+        const vehicleEl = document.getElementById('drv-vehicle');
+        const cityEl = document.getElementById('drv-city');
+
+        if (!nameEl || !phoneEl || !cnicEl || !nameEl.value.trim() || !phoneEl.value.trim() || !cnicEl.value.trim()) {
+            alert('براہ کرم نام، نمبر اور شناختی کارڈ لازمی درج کریں!');
+            return;
+        }
+        if (!db) { alert('Database connection error.'); return; }
+
+        const vehicleVal = vehicleEl ? vehicleEl.value.trim() : '';
+        const cityVal = cityEl ? cityEl.value.trim() : '';
+
+        const { error } = await db.from('Drivers').insert([{
+            name: nameEl.value.trim(),
+            phone: phoneEl.value.trim(),
+            cnic: cnicEl.value.trim(),
+            license: vehicleVal + ' - ' + cityVal
+        }]);
+
+        if (error) {
+            alert('خرابی: ' + error.message);
+        } else {
+            alert('✅ ڈرائیور رجسٹریشن مکمل ہو گئی! ہم جلد رابطہ کریں گے۔');
+            nameEl.value = '';
+            phoneEl.value = '';
+            cnicEl.value = '';
+            if(vehicleEl) vehicleEl.value = '';
+            if(cityEl) cityEl.value = '';
+        }
+    }
+
+    async function handleComplaintSubmit() {
+        const nameEl = document.getElementById('cmp-name');
+        const phoneEl = document.getElementById('cmp-phone');
+        const msgEl = document.getElementById('cmp-msg');
+
+        if (!nameEl || !msgEl || !nameEl.value.trim() || !msgEl.value.trim()) {
+            alert('براہ کرم نام اور شکایت لکھیں!');
+            return;
+        }
+        if (!db) { alert('Database connection error.'); return; }
+
+        const phoneVal = phoneEl ? phoneEl.value.trim() : '';
+
+        const { error } = await db.from('Complaints').insert([{
+            name: nameEl.value.trim() + (phoneVal ? ' (' + phoneVal + ')' : ''),
+            complaint_text: msgEl.value.trim()
+        }]);
+
+        if (error) {
+            alert('خرابی: ' + error.message);
+        } else {
+            alert('✅ آپ کی شکایت درج کر لی گئی ہے۔ شکریہ!');
+            nameEl.value = '';
+            if(phoneEl) phoneEl.value = '';
+            msgEl.value = '';
+        }
+    }
+    </script>
+    
