@@ -1,34 +1,22 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
-
-  <script>
-  window.addEventListener('error', function(event) {
-    alert('JS Error: ' + event.message);
-  });
-  window.addEventListener('unhandledrejection', function(event) {
-    alert('Supabase Error: ' + (event.reason?.message || event.reason));
-  });
-                          </script>
-  
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahfuz Drive - محفوظ ڈرائیو</title>
-    <meta name="description" content="Mahfuz Drive provides reliable and safe taxi services across Dera Ghazi Khan, Taunsa Sharif, Kot Addu, Muzaffargarh, and Multan. بکنگ کریں اور محفوظ سفر کریں۔">
+    <title>محفوظ ڈرائیو - MAHFUZ DRIVE</title>
+    <meta name="description" content="Mahfuz Drive provides reliable and safe passenger taxi services across Dera Ghazi Khan, Taunsa Sharif, Kot Addu, Muzaffargarh, and Multan. بکنگ کریں اور محفوظ سفر کریں۔">
     <meta name="keywords" content="Mahfuz Drive, Taxi Service, Dera Ghazi Khan, Taunsa, Online Taxi Pakistan, محفوظ ڈرائیو">
     <link rel="manifest" href="/manifest.json">
-  </head>
-  
-    <title>محفوظ ڈرائیو - MAHFUZ DRIVE</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://iwqngknjyolswbfkflii.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_thux2wgD6hfdumeYctpm_w_T-ppCKr1';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
         body { background-color: #f4f6f8; color: #333; padding-bottom: 70px; }
@@ -71,7 +59,7 @@
 
         /* Bottom Nav Bar */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; cursor: pointer; }
         .nav-item.active { color: #0b4d2c; }
         .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
 
@@ -94,7 +82,7 @@
             <!-- AI Box -->
             <div class="card">
                 <div class="card-title">✨ اپنے الفاظ میں بتائیں</div>
-                <textarea rows="2" placeholder="مثال: کل صبح 8 بجے ہم 6 لوگ تونسہ شریف سے ملتان جانا چاہتے ہیں، سامان بھی ہے"></textarea>
+                <textarea rows="2" placeholder="مثال: کل صبح 8 بجے ہم 6 مسافر تونسہ شریف سے ملتان جانا چاہتے ہیں"></textarea>
                 <button class="btn-green">مناسب سواری تجویز کریں</button>
             </div>
 
@@ -142,18 +130,20 @@
         </div>
     </div>
 
-  <div id="page-driver" class="page">
-    
     <!-- PAGE 2: DRIVER REGISTRATION -->
-    <input type="text" id="driverName" placeholder="مکمل نام">
-<input type="text" id="driverPhone" placeholder="موبائل نمبر">
-<input type="text" id="driverCnic" placeholder="شناختی کارڈ نمبر">
-<input type="text" id="driverLicense" placeholder="ڈرائیونگ لائسنس نمبر">
-  <button class="btn-green" onclick="submitRegistration()">درخواست جمع کریں</button>
-  </div>
-  
-    
-  
+    <div id="page-driver" class="page">
+        <div class="header">
+            <h1>ڈرائیور رجسٹریشن</h1>
+            <p>محفوظ ڈرائیو کے ساتھ شامل ہوں اور باعزت روزگار کمائیں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <input type="text" id="driverName" placeholder="مکمل نام">
+                <input type="text" id="driverPhone" placeholder="موبائل نمبر">
+                <input type="text" id="driverCnic" placeholder="شناختی کارڈ نمبر">
+                <input type="text" id="driverLicense" placeholder="ڈرائیونگ لائسنس نمبر">
+                <button class="btn-green" onclick="submitRegistration()">درخواست جمع کریں</button>
+            </div>
         </div>
     </div>
 
@@ -198,41 +188,36 @@
     </div>
 
     <script>
-async function submitRegistration() {
-  try {
-    const name = document.getElementById('driverName').value.trim();
-    const phone = document.getElementById('driverPhone').value.trim();
-    const cnic = document.getElementById('driverCnic').value.trim();
-    const license = document.getElementById('driverLicense').value.trim();
+        async function submitRegistration() {
+            try {
+                const name = document.getElementById('driverName').value.trim();
+                const phone = document.getElementById('driverPhone').value.trim();
+                const cnic = document.getElementById('driverCnic').value.trim();
+                const license = document.getElementById('driverLicense').value.trim();
 
-    // چیک کریں کہ کوئی خانہ خالی تو نہیں ہے
-    if (!name || !phone || !cnic || !license) {
-      alert('براہ کرم رجسٹریشن مکمل کرنے کے لیے تمام خانے (نام، موبائل نمبر، شناختی کارڈ اور لائسنس) پُر کریں۔');
-      return;
-    }
+                if (!name || !phone || !cnic || !license) {
+                    alert('براہ کرم رجسٹریشن مکمل کرنے کے لیے تمام خانے (نام، موبائل نمبر، شناختی کارڈ اور لائسنس) پُر کریں۔');
+                    return;
+                }
 
-    // ڈیٹا بیس میں خودکار طور پر ڈیٹا بھیجنا
-    const { data, error } = await supabase
-      .from('drivers')
-      .insert([{ name: name, phone: phone, cnic: cnic, license: license }]);
+                // ٹیبل کا نام 'Drivers' (بڑے D کے ساتھ)
+                const { data, error } = await supabaseClient
+                    .from('Drivers')
+                    .insert([{ name: name, phone: phone, cnic: cnic, license: license }]);
 
-    if (error) {
-      console.error('Supabase Error:', error.message);
-      alert('معذرت، اس وقت رجسٹریشن مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔');
-    } else {
-      // کامیابی کا خودکار پیغام اور فارم خالی کرنا
-      alert('مبارک ہو! آپ کی ڈرائیور رجسٹریشن کامیابی سے مکمل ہو گئی ہے۔');
-      
-      document.getElementById('driverName').value = '';
-      document.getElementById('driverPhone').value = '';
-      document.getElementById('driverCnic').value = '';
-      document.getElementById('driverLicense').value = '';
-    }
-  } catch (err) {
-    console.error('System Exception:', err.message);
-    alert('کچھ تکنیکی خرابی پیش آئی ہے، براہ کرم بعد میں کوشش کریں۔');
-  }
-      }
+                if (error) {
+                    alert('Supabase ایرر: ' + error.message);
+                } else {
+                    alert('مبارک ہو! آپ کی ڈرائیور رجسٹریشن کامیابی سے مکمل ہو گئی ہے۔');
+                    document.getElementById('driverName').value = '';
+                    document.getElementById('driverPhone').value = '';
+                    document.getElementById('driverCnic').value = '';
+                    document.getElementById('driverLicense').value = '';
+                }
+            } catch (err) {
+                alert('تکنیکی خرابی: ' + err.message);
+            }
+        }
       
         function showPage(pageId, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -242,7 +227,6 @@ async function submitRegistration() {
         }
         function switchTab(el) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            el.classList.active;
             el.classList.add('active');
         }
         function selectV(el) {
@@ -250,11 +234,11 @@ async function submitRegistration() {
             el.classList.add('active');
         }
     </script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-  }
-  </script>
-  
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
 </body>
-</html>
+      </html>
+      
