@@ -1,508 +1,342 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl" id="main-html">
+<html lang="ur" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محفوظ ڈرائیو - MAHFUZ DRIVE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const supabaseUrl = 'https://iwqngknjyolswbfkflii.supabase.co';
+      const supabaseKey = 'sb_publishable_thux2wg6hdfumeyctpm_w_ppCkr1';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
     <style>
-        :root {
-            --primary: #0b4d2c;
-            --primary-dark: #07361e;
-            --accent: #d4af37;
-            --bg: #f3f5f4;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --muted: #6b7280;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Noto Nastaliq Urdu', 'Poppins', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 80px;
-            line-height: 1.8;
-        }
-        body.en-mode {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.5;
-        }
-        .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 25px 20px 30px;
-            text-align: center;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.15);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .header h1 { font-size: 24px; margin-bottom: 8px; }
-        .header p { font-size: 13px; opacity: 0.9; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+        body { background-color: #f4f6f8; color: #333; padding-bottom: 75px; }
         
-        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .card h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary); }
+        /* Header */
+        .header { background: linear-gradient(135deg, #0b4d2c, #06311b); color: white; padding: 25px 15px 35px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .badge { background: rgba(255,255,255,0.15); font-size: 11px; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+        .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+        .header p { font-size: 12px; opacity: 0.9; }
+
+        /* Main Container */
+        .container { padding: 0 15px; margin-top: -20px; }
+
+        /* Card Section */
+        .card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+        .card-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #0b4d2c; display: flex; align-items: center; gap: 6px; }
+
+        /* Input Box */
+        label { font-size: 11px; font-weight: 600; color: #555; margin-bottom: 4px; display: block; }
+        textarea, input, select { width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; font-size: 13px; margin-bottom: 10px; outline: none; background: #fafafa; }
+        textarea:focus, input:focus, select:focus { border-color: #0b4d2c; background: #fff; }
+        input[type="file"] { padding: 7px; font-size: 12px; background: #f0f4f1; border: 1px dashed #0b4d2c; }
         
-        textarea, input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            margin-bottom: 12px;
-            background: #f9fafb;
-        }
-        textarea:focus, input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: #fff;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-accent { background-color: var(--accent); color: #111; }
-        
-        .trip-tabs {
-            display: flex;
-            background: #e5e7eb;
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 15px;
-        }
-        .trip-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .trip-tab.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .vehicle-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .vehicle-card {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 10px 4px;
-            text-align: center;
-            cursor: pointer;
-            background: #fff;
-        }
-        .vehicle-card.selected {
-            border-color: var(--primary);
-            background: #ecfdf5;
-        }
-        .vehicle-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-        .vehicle-name { font-size: 11px; font-weight: bold; }
-        
-        .cities-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-        }
-        .city-tag {
-            background: #f3f4f6;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #e5e7eb;
-            z-index: 1000;
-        }
-        .nav-btn {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: inherit;
-            font-size: 11px;
-            color: var(--muted);
-            cursor: pointer;
-        }
-        .nav-btn.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 20px; margin-bottom: 2px; }
-        
-        .section { display: none; }
-        .section.active { display: block; }
-        
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
+        .btn-green { background: #0b4d2c; color: white; width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .btn-green:hover { background: #083b21; }
+        .btn-green:disabled { background: #999; cursor: not-allowed; }
+
+        /* Tabs */
+        .tabs { display: flex; background: #eee; border-radius: 8px; padding: 3px; margin-bottom: 15px; }
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; color: #666; }
+        .tab.active { background: #0b4d2c; color: white; }
+
+        /* Vehicles Grid */
+        .vehicle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .v-item { border: 1px solid #eee; border-radius: 10px; padding: 10px 5px; text-align: center; cursor: pointer; background: #fff; }
+        .v-item.active { border-color: #d4af37; background: #fffdf0; box-shadow: 0 0 0 1px #d4af37; }
+        .v-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .v-label { font-size: 11px; font-weight: 600; }
+
+        /* Area Tags */
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #f0f0f0; font-size: 11px; padding: 5px 10px; border-radius: 15px; color: #555; }
+
+        /* Bottom Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 999; }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; cursor: pointer; }
+        .nav-item.active { color: #0b4d2c; }
+        .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+        /* Page Display Control */
+        .page { display: none; }
+        .page.active { display: block; }
+        .doc-box { background: #f9fbf9; border: 1px solid #d9e6dd; border-radius: 10px; padding: 10px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="badge" data-ur="محفوظ و قابلِ اعتماد سروس" data-en="Safe & Reliable Service">محفوظ و قابلِ اعتماد سروس</div>
-        <h1 data-ur="محفوظ ڈرائیو ٹیکسی سروس" data-en="MAHFUZ DRIVE Taxi Service">محفوظ ڈرائیو ٹیکسی سروس</h1>
-        <p data-ur="ڈیرہ غازی خان، تونسہ شریف، کوٹ ادو، مظفر گڑھ اور ملتان میں آپ کی اپنی سواری" data-en="Your own ride in D.G. Khan, Taunsa Sharif, Kot Addu, Muzaffargarh & Multan">ڈیرہ غازی خان، تونسہ شریف، کوٹ ادو، مظفر گڑھ اور ملتان میں آپ کی اپنی سواری</p>
+    <!-- PAGE 1: HOME / BOOKING -->
+    <div id="page-home" class="page active">
+        <div class="header">
+            <span class="badge">🛡️ محفوظ و قابل اعتماد مسافر سروس</span>
+            <h1>محفوظ ڈرائیو ٹیکسی سروس</h1>
+            <p>پورے جنوبی پنجاب میں آپ کی اپنی باوقار مسافر سواری</p>
+        </div>
+
+        <div class="container">
+            <!-- Quick Suggestion Box -->
+            <div class="card">
+                <div class="card-title">✨ اپنے الفاظ میں بتائیں</div>
+                <textarea id="ai-prompt" rows="2" placeholder="مثال: کل صبح 8 بجے ہم 4 مسافر تونسہ شریف سے ملتان جانا چاہتے ہیں"></textarea>
+                <button class="btn-green" onclick="suggestRide()">مناسب سواری تجویز کریں</button>
+                <div id="ai-result" style="display:none; margin-top:10px; padding:10px; background:#eef7f1; border-radius:8px; font-size:12px; color:#0b4d2c; font-weight:600;"></div>
+            </div>
+
+            <!-- Booking Form Card -->
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" id="tab-local" onclick="switchRideType('local', this)">لوکل (شہر کے اندر)</div>
+                    <div class="tab" id="tab-intercity" onclick="switchRideType('intercity', this)">شہر سے شہر</div>
+                </div>
+
+                <div class="card-title">سواری منتخب کریں</div>
+                <div class="vehicle-grid">
+                    <div class="v-item" onclick="selectV(this, 'موٹر سائیکل')"><span class="v-icon">🏍️</span><span class="v-label">موٹر سائیکل</span></div>
+                    <div class="v-item" onclick="selectV(this, 'پاسنجر رکشہ')"><span class="v-icon">🛺</span><span class="v-label">پاسنجر رکشہ</span></div>
+                    <div class="v-item active" onclick="selectV(this, 'کار')"><span class="v-icon">🚗</span><span class="v-label">کار</span></div>
+                    <div class="v-item" onclick="selectV(this, 'منی بس')"><span class="v-icon">🚌</span><span class="v-label">منی بس</span></div>
+                </div>
+
+                <!-- LOCAL RIDE FIELDS -->
+                <div id="local-fields">
+                    <label>شہر منتخب کریں (جنوبی پنجاب)</label>
+                    <select id="local-city" onchange="updateLocalAreas()"></select>
+
+                    <label>پک اپ علاقہ (کہاں سے بیٹھنا ہے)</label>
+                    <select id="local-pickup-select" onchange="toggleCustomInput('local-pickup-select', 'local-pickup-custom')"></select>
+                    <input type="text" id="local-pickup-custom" style="display:none;" placeholder="اپنے محلے یا چوک کا نام لکھیں">
+
+                    <label>ڈراپ آف علاقہ (کہاں اترنا ہے / منزل)</label>
+                    <select id="local-drop-select" onchange="toggleCustomInput('local-drop-select', 'local-drop-custom')"></select>
+                    <input type="text" id="local-drop-custom" style="display:none;" placeholder="اپنی منزل کا نام لکھیں">
+                </div>
+
+                <!-- INTERCITY RIDE FIELDS -->
+                <div id="intercity-fields" style="display:none;">
+                    <label>روانگی کا شہر (کہاں سے جانا ہے)</label>
+                    <select id="inter-from-city"></select>
+                    <input type="text" id="inter-pickup-detail" placeholder="پک اپ کی مخصوص جگہ (مثلاً لاری اڈہ یا گھر کا پتہ)">
+
+                    <label>منزل کا شہر (کس شہر جانا ہے)</label>
+                    <select id="inter-to-city"></select>
+                    <input type="text" id="inter-drop-detail" placeholder="منزل کی مخصوص جگہ (مثلاً نشتر ہسپتال ملتان)">
+                </div>
+
+                <label>مسافر کا نام</label>
+                <input type="text" id="book-name" placeholder="اپنا مکمل نام لکھیں">
+
+                <label>پاکستانی موبائل نمبر (03 سے شروع کریں)</label>
+                <input type="tel" id="book-phone" maxlength="11" placeholder="مثلاً: 03001234567" dir="ltr" style="text-align:right;">
+
+                <button id="btn-book" class="btn-green" style="margin-top: 5px; background: #d4af37; color: #000;" onclick="submitBooking()">ابھی بک کریں</button>
+            </div>
+
+            <!-- Areas Cover -->
+            <div class="card">
+                <div class="card-title">📍 جنوبی پنجاب میں ہماری سروس کے اضلاع و شہر</div>
+                <div class="tags" id="all-cities-tags"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <!-- HOME SECTION -->
-        <div id="sec-home" class="section active">
-            <!-- AI / Quick Text Box -->
-            <div class="card">
-                <h3 data-ur="✨ اپنے الفاظ میں بتائیں" data-en="✨ Describe in Your Words">✨ اپنے الفاظ میں بتائیں</h3>
-                <textarea id="ai-prompt" rows="2" placeholder="مثال: کل صبح 8 بجے ہم 4 مسافر تونسہ شریف سے ملتان جانا چاہتے ہیں"></textarea>
-                <button type="button" class="btn btn-primary" onclick="handleAISubmit()" data-ur="مناسب سواری تجویز کریں" data-en="Suggest Suitable Ride">مناسب سواری تجویز کریں</button>
-            </div>
+    <!-- PAGE 2: DRIVER REGISTRATION -->
+    <div id="page-driver" class="page">
+        <div class="header">
+            <h1>ڈرائیور رجسٹریشن</h1>
+            <p>تصدیق شدہ ڈرائیور بنیں اور محفوظ ڈرائیو کے ساتھ باوقار روزگار کمائیں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">🪪 ذاتی اور گاڑی کی تفصیلات</div>
+                <label>مکمل نام (مطابق شناختی کارڈ)</label>
+                <input type="text" id="drv-name" placeholder="اپنا مکمل نام لکھیں">
 
-            <!-- Standard Booking Form -->
-            <div class="card">
-                <div class="trip-tabs">
-                    <div class="trip-tab active" id="tab-local" onclick="setTripType('Local')" data-ur="لوکل (شہر کے اندر)" data-en="Local (Within City)">لوکل (شہر کے اندر)</div>
-                    <div class="trip-tab" id="tab-intercity" onclick="setTripType('Intercity')" data-ur="شہر سے شہر" data-en="City to City">شہر سے شہر</div>
-                </div>
+                <label>پاکستانی موبائل نمبر</label>
+                <input type="tel" id="drv-phone" maxlength="11" placeholder="03001234567" dir="ltr" style="text-align:right;">
 
-                <h3 data-ur="سواری منتخب کریں" data-en="Select Vehicle">سواری منتخب کریں</h3>
-                <div class="vehicle-grid">
-                    <div class="vehicle-card selected" onclick="selectVehicle(this, 'Car')">
-                        <span class="vehicle-icon">🚗</span>
-                        <span class="vehicle-name" data-ur="کار" data-en="Car">کار</span>
-                    </div>
-                    <div class="vehicle-card" onclick="selectVehicle(this, 'Bike')">
-                        <span class="vehicle-icon">🏍️</span>
-                        <span class="vehicle-name" data-ur="موٹر سائیکل" data-en="Motorbike">موٹر سائیکل</span>
-                    </div>
-                    <div class="vehicle-card" onclick="selectVehicle(this, 'Rickshaw')">
-                        <span class="vehicle-icon">🛺</span>
-                        <span class="vehicle-name" data-ur="پاسنجر رکشہ" data-en="Rickshaw">پاسنجر رکشہ</span>
-                    </div>
-                    <div class="vehicle-card" onclick="selectVehicle(this, 'Mini Bus')">
-                        <span class="vehicle-icon">🚐</span>
-                        <span class="vehicle-name" data-ur="منی بس" data-en="Mini Bus">منی بس</span>
-                    </div>
-                </div>
+                <label>شہر منتخب کریں</label>
+                <select id="drv-city"></select>
 
-                <label style="font-size:13px; font-weight:bold;" data-ur="شہر" data-en="City">شہر</label>
-                <select id="city-select">
-                    <option value="تونسہ شریف">تونسہ شریف (Taunsa Sharif)</option>
-                    <option value="ڈیرہ غازی خان">ڈیرہ غازی خان (D.G. Khan)</option>
-                    <option value="کوٹ ادو">کوٹ ادو (Kot Addu)</option>
-                    <option value="مظفر گڑھ">مظفر گڑھ (Muzaffargarh)</option>
-                    <option value="ملتان">ملتان (Multan)</option>
+                <label>شناختی کارڈ نمبر (13 ہندسے بغیر ڈیش کے)</label>
+                <input type="tel" id="drv-cnic" maxlength="13" placeholder="مثلاً: 3210312345671" dir="ltr" style="text-align:right;">
+
+                <label>مسافر سواری کی قسم</label>
+                <select id="drv-vehicle">
+                    <option value="">-- سواری منتخب کریں --</option>
+                    <option value="کار">کار</option>
+                    <option value="پاسنجر رکشہ">پاسنجر رکشہ</option>
+                    <option value="موٹر سائیکل">موٹر سائیکل</option>
+                    <option value="منی بس / وین">منی بس / مسافر وین</option>
                 </select>
 
-                <input type="text" id="cust-name" placeholder="آپ کا نام / Your Name">
-                <input type="tel" id="cust-phone" placeholder="موبائل نمبر / Mobile Number">
-                <input type="text" id="pickup-loc" placeholder="پک اپ کی جگہ (مثلاً باگڑا چوک) / Pickup Location">
+                <label>ڈرائیونگ لائسنس نمبر</label>
+                <input type="text" id="drv-license" placeholder="اپنا ڈرائیونگ لائسنس نمبر درج کریں">
 
-                <button type="button" class="btn btn-accent" onclick="handleBookingSubmit()" data-ur="ابھی بک کریں" data-en="Book Now">ابھی بک کریں</button>
-            </div>
+                <div class="doc-box">
+                    <div class="card-title" style="font-size:13px;">📸 شناختی کارڈ اور لائسنس کی تصاویر (لازمی)</div>
+                    <label>1. شناختی کارڈ کی فرنٹ سائیڈ (سامنے والی تصویر)</label>
+                    <input type="file" id="file-cnic-front" accept="image/*" capture="environment">
 
-            <!-- Our Areas -->
-            <div class="card" style="text-align:center;">
-                <h3 data-ur="📍 ہمارے علاقے" data-en="📍 Our Service Areas">📍 ہمارے علاقے</h3>
-                <div class="cities-tags">
-                    <span class="city-tag">ڈیرہ غازی خان</span>
-                    <span class="city-tag">تونسہ شریف</span>
-                    <span class="city-tag">کوٹ ادو</span>
-                    <span class="city-tag">مظفر گڑھ</span>
-                    <span class="city-tag">ملتان</span>
+                    <label>2. شناختی کارڈ کی بیک سائیڈ (پیچھے والی تصویر)</label>
+                    <input type="file" id="file-cnic-back" accept="image/*" capture="environment">
+
+                    <label>3. ڈرائیونگ لائسنس کی فرنٹ سائیڈ</label>
+                    <input type="file" id="file-lic-front" accept="image/*" capture="environment">
+
+                    <label>4. ڈرائیونگ لائسنس کی بیک سائیڈ</label>
+                    <input type="file" id="file-lic-back" accept="image/*" capture="environment">
                 </div>
-            </div>
-        </div>
 
-        <!-- DRIVER SECTION -->
-        <div id="sec-driver" class="section">
-            <div class="card">
-                <h3 data-ur="🚗 ڈرائیور رجسٹریشن" data-en="🚗 Driver Registration">🚗 ڈرائیور رجسٹریشن</h3>
-                <p style="font-size:12px; color:var(--muted); margin-bottom:12px;" data-ur="محفوظ ڈرائیو ٹیم کا حصہ بننے کے لیے تفصیلات درج کریں" data-en="Enter details to join MAHFUZ DRIVE team">محفوظ ڈرائیو ٹیم کا حصہ بننے کے لیے تفصیلات درج کریں</p>
-                <input type="text" id="drv-name" placeholder="ڈرائیور کا پورا نام / Full Name">
-                <input type="tel" id="drv-phone" placeholder="موبائل / واٹس ایپ نمبر / Phone Number">
-                <input type="text" id="drv-cnic" placeholder="شناختی کارڈ نمبر / CNIC Number">
-                <input type="text" id="drv-vehicle" placeholder="گاڑی کی قسم اور ماڈل / Vehicle Type & Model">
-                <input type="text" id="drv-city" placeholder="شہر / City">
-                <button type="button" class="btn btn-primary" onclick="handleDriverSubmit()" data-ur="رجسٹریشن جمع کریں" data-en="Submit Registration">رجسٹریشن جمع کریں</button>
+                <button id="btn-driver" class="btn-green" onclick="submitDriver()">تصدیق کے لیے درخواست جمع کریں</button>
             </div>
         </div>
+    </div>
 
-        <!-- SETTINGS SECTION -->
-        <div id="sec-settings" class="section">
+    <!-- PAGE 3: APP SETTINGS -->
+    <div id="page-settings" class="page">
+        <div class="header">
+            <h1>ایپ سیٹنگز</h1>
+            <p>معلومات اور ایپ انسٹال کرنے کا طریقہ</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">⚙️ جنرل معلومات</div>
+                <div style="font-size: 13px; padding: 8px 0; border-bottom: 1px solid #eee;">زبان: <b>اردو</b></div>
+                <div style="font-size: 13px; padding: 8px 0; border-bottom: 1px solid #eee;">سروس کی نوعیت: <b>صرف مسافر ٹیکسی سروس</b></div>
+                <div style="font-size: 13px; padding: 8px 0;">ایپ ورژن: <b>v2.0 (MAHFUZ DRIVE)</b></div>
+            </div>
             <div class="card">
-                <h3 data-ur="⚙️ ایپ سیٹنگز" data-en="⚙️ App Settings">⚙️ ایپ سیٹنگز</h3>
-                <div class="setting-row">
-                    <span data-ur="زبان تبدیل کریں (Language)" data-en="Change Language (زبان)">زبان تبدیل کریں (Language)</span>
-                    <select id="lang-switcher" onchange="switchLanguage()" style="width:auto; margin:0; padding:6px 12px;">
-                        <option value="ur">اردو (Urdu)</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
-                <div class="setting-row">
-                    <span data-ur="نوٹیفکیشنز" data-en="Notifications">نوٹیفکیشنز</span>
-                    <input type="checkbox" checked style="width:20px; height:20px; margin:0;">
-                </div>
-                <div style="margin-top:15px; font-size:12px; color:var(--muted); text-align:center;">
-                    MAHFUZ DRIVE v1.0 | Taunsa & South Punjab
-                </div>
+                <div class="card-title">📲 موبائل اسکرین پر ایپ لگانے کا طریقہ</div>
+                <p style="font-size: 12px; line-height: 1.7; color: #555;">
+                    اس ایپ کو بغیر کسی سیکیورٹی وارننگ کے اپنے موبائل میں چلانے کے لیے Google Chrome کے اوپر دائیں کونے میں موجود <b>تین نقطوں (⋮)</b> پر کلک کریں اور <b>"Add to Home screen"</b> یا <b>"Install app"</b> کو دبا دیں۔
+                </p>
             </div>
         </div>
+    </div>
 
-        <!-- COMPLAINTS SECTION -->
-        <div id="sec-complaints" class="section">
-            <div class="card">
-                <h3 data-ur="⚠️ شکایات اور تجاویز" data-en="⚠️ Complaints & Feedback">⚠️ شکایات اور تجاویز</h3>
-                <input type="text" id="cmp-name" placeholder="آپ کا نام / Your Name">
-                <input type="tel" id="cmp-phone" placeholder="رابطہ نمبر / Contact Number">
-                <textarea id="cmp-msg" rows="4" placeholder="اپنی شکایت یا تجویز تفصیل سے لکھیں..."></textarea>
-                <button type="button" class="btn btn-primary" onclick="handleComplaintSubmit()" data-ur="شکایت بھیجیں" data-en="Send Complaint">شکایت بھیجیں</button>
+    <!-- PAGE 4: COMPLAINTS -->
+    <div id="page-complaints" class="page">
+        <div class="header">
+            <h1>شکایات و تجاویز</h1>
+            <p>ہماری بہتری کے لیے اپنی رائے دیں یا شکایت درج کروائیں</p>
+        </div>
+        <div class="container">
+            <div class="card" style="margin-top: 15px;">
+                <label>آپ کا نام</label>
+                <input type="text" id="comp-name" placeholder="اپنا نام لکھیں">
+                <label>پاکستانی موبائل نمبر</label>
+                <input type="tel" id="comp-phone" maxlength="11" placeholder="03001234567" dir="ltr" style="text-align:right;">
+                <label>شکایت یا تجویز</label>
+                <textarea id="comp-text" rows="4" placeholder="اپنی شکایت یا تجویز یہاں تفصیل سے لکھیں..."></textarea>
+                <button id="btn-comp" class="btn-green" style="background: #c0392b;" onclick="submitComplaint()">شکایت بھیجیں</button>
             </div>
         </div>
     </div>
 
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-        <button type="button" class="nav-btn active" onclick="openSection('sec-home', this)">
-            <span class="nav-icon">🏠</span>
-            <span data-ur="بکنگ" data-en="Booking">بکنگ</span>
-        </button>
-        <button type="button" class="nav-btn" onclick="openSection('sec-driver', this)">
-            <span class="nav-icon">🚗</span>
-            <span data-ur="ڈرائیور" data-en="Driver">ڈرائیور</span>
-        </button>
-        <button type="button" class="nav-btn" onclick="openSection('sec-settings', this)">
-            <span class="nav-icon">⚙️</span>
-            <span data-ur="سیٹنگز" data-en="Settings">سیٹنگز</span>
-        </button>
-        <button type="button" class="nav-btn" onclick="openSection('sec-complaints', this)">
-            <span class="nav-icon">⚠️</span>
-            <span data-ur="شکایات" data-en="Complaints">شکایات</span>
-        </button>
+        <div class="nav-item active" onclick="showPage('page-home', this)"><span class="nav-icon">🏠</span>بکنگ</div>
+        <div class="nav-item" onclick="showPage('page-driver', this)"><span class="nav-icon">🚗</span>ڈرائیور</div>
+        <div class="nav-item" onclick="showPage('page-settings', this)"><span class="nav-icon">⚙️</span>سیٹنگز</div>
+        <div class="nav-item" onclick="showPage('page-complaints', this)"><span class="nav-icon">⚠️</span>شکایات</div>
     </div>
 
     <script>
-    // Supabase Initialization
-    const SUPABASE_URL = 'https://iwqngknjyolswbfkflii.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_thux2wgD6hfdumeYctpm_w_T-ppCKr1';
-    let db = null;
-    try {
-        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    } catch (e) {
-        console.error("Supabase init error:", e);
-    }
+        // جنوبی پنجاب کے تمام اضلاع/شہر اور ان کے اندرونی علاقے
+        const southPunjabData = {
+            "تونسہ شریف": ["کالج چوک", "لاری اڈہ تونسہ", "تحصیل ہیڈکوارٹر ہسپتال", "سنگھڑ پل", "منگروٹھہ", "وہوا", "مٹھے والی", "بستی بزدار", "کوتوالی روڈ", "ڈی جی خان روڈ"],
+            "ڈیرہ غازی خان": ["ٹریفک چوک", "لاری اڈہ ڈی جی خان", "ٹیچنگ ہسپتال", "غازی یونیورسٹی", "چوک چورہٹہ", "خیابان سرور", "بلاک 1 تا 50", "گدائی", "سخی سرور", "کوٹ چھٹہ"],
+            "کوٹ ادو": ["جی ٹی روڈ چوک", "لاری اڈہ کوٹ ادو", "تحصیل ہسپتال", "سنانواں", "دائرہ دین پناہ", "چوک سرور شہید", "احسان پور", "تھرمال کالونی"],
+            "مظفر گڑھ": ["کچہری چوک", "لاری اڈہ مظفرگڑھ", "ڈسٹرکٹ ہسپتال", "تلیری بائی پاس", "خان گڑھ", "علی پور", "جتوئی", "شہر سلطان"],
+            "ملتان": ["چوک کچہری", "نشتر ہسپتال", "وہاڑی چوک", "بوسن روڈ", "بہاؤالدین زکریا یونیورسٹی", "دولت گیٹ", "کینٹ", "شاہ رکن عالم کالونی", "شجاع آباد", "جلال پور پیروالا"],
+            "لیہ": ["کالج روڈ لیہ", "لاری اڈہ لیہ", "ڈسٹرکٹ ہسپتال", "چوک اعظم", "کروڑ لعل عیسن", "فتح پور", "کوٹ سلطان"],
+            "راجن پور": ["انڈس ہائی وے چوک", "لاری اڈہ راجن پور", "ڈسٹرکٹ ہسپتال", "جام پور", "فاضل پور", "روجھان", "کوٹ مٹھن"],
+            "بہاولپور": ["فرید گیٹ", "وکٹوریہ ہسپتال", "اسلامیہ یونیورسٹی", "ماڈل ٹاؤن", "لاری اڈہ بہاولپور", "احمد پور شرقیہ", "حاصل پور", "یزمان"],
+            "رحیم یار خان": ["سٹی پل", "شیخ زید ہسپتال", "لاری اڈہ رحیم یار خان", "صادق آباد", "خان پور", "لیاقت پور"],
+            "بہاولنگر": ["مین بازار", "ڈسٹرکٹ ہسپتال", "چشتیاں", "ہارون آباد", "فورٹ عباس", "منچن آباد"],
+            "خانیوال": ["کچہری چوک خانیوال", "لاری اڈہ", "میاں چنوں", "کبیر والا", "جہانیاں"],
+            "وہاڑی": ["کلب چوک", "ڈسٹرکٹ ہسپتال", "بورے والا", "میلسی"],
+            "لودھراں": ["مین چوک لودھراں", "دنیا پور", "کہروڑ پکا"]
+        };
 
-    let currentVehicle = 'Car';
-    let currentTripType = 'Local';
+        let currentRideType = 'local';
+        let selectedVehicle = 'کار';
 
-    function openSection(secId, btn) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(secId).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-    }
+        // صفحہ لوڈ ہوتے ہی شہروں کی فہرست بھرنا
+        window.onload = function() {
+            const cities = Object.keys(southPunjabData);
+            const localCitySel = document.getElementById('local-city');
+            const interFromSel = document.getElementById('inter-from-city');
+            const interToSel = document.getElementById('inter-to-city');
+            const drvCitySel = document.getElementById('drv-city');
+            const tagsDiv = document.getElementById('all-cities-tags');
 
-    function setTripType(type) {
-        currentTripType = type;
-        const localTab = document.getElementById('tab-local');
-        const intercityTab = document.getElementById('tab-intercity');
-        if(localTab && intercityTab) {
-            localTab.classList.toggle('active', type === 'Local');
-            intercityTab.classList.toggle('active', type === 'Intercity');
+            cities.forEach((city, idx) => {
+                localCitySel.innerHTML += `<option value="${city}" ${city === 'تونسہ شریف' ? 'selected' : ''}>${city}</option>`;
+                interFromSel.innerHTML += `<option value="${city}" ${city === 'تونسہ شریف' ? 'selected' : ''}>${city}</option>`;
+                interToSel.innerHTML += `<option value="${city}" ${city === 'ملتان' ? 'selected' : ''}>${city}</option>`;
+                drvCitySel.innerHTML += `<option value="${city}">${city}</option>`;
+                tagsDiv.innerHTML += `<span class="tag">${city}</span>`;
+            });
+            updateLocalAreas();
+        };
+
+        // لوکل علاقوں کی فہرست اپ ڈیٹ کرنا
+        function updateLocalAreas() {
+            const city = document.getElementById('local-city').value;
+            const areas = southPunjabData[city] || [];
+            const pickupSel = document.getElementById('local-pickup-select');
+            const dropSel = document.getElementById('local-drop-select');
+
+            pickupSel.innerHTML = `<option value="">-- پک اپ علاقہ منتخب کریں --</option>`;
+            dropSel.innerHTML = `<option value="">-- منزل (ڈراپ آف) منتخب کریں --</option>`;
+
+            areas.forEach(area => {
+                pickupSel.innerHTML += `<option value="${area}">${area}</option>`;
+                dropSel.innerHTML += `<option value="${area}">${area}</option>`;
+            });
+
+            pickupSel.innerHTML += `<option value="OTHER">✍️ دیگر علاقہ / خود لکھیں...</option>`;
+            dropSel.innerHTML += `<option value="OTHER">✍️ دیگر علاقہ / خود لکھیں...</option>`;
         }
-    }
 
-    function selectVehicle(el, vehicle) {
-        document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-        currentVehicle = vehicle;
-    }
-
-    function switchLanguage() {
-        const switcher = document.getElementById('lang-switcher');
-        if (!switcher) return;
-        const lang = switcher.value;
-        const htmlTag = document.getElementById('main-html');
-        
-        if (htmlTag) {
-            if (lang === 'en') {
-                htmlTag.setAttribute('lang', 'en');
-                htmlTag.setAttribute('dir', 'ltr');
-                document.body.classList.add('en-mode');
-            } else {
-                htmlTag.setAttribute('lang', 'ur');
-                htmlTag.setAttribute('dir', 'rtl');
-                document.body.classList.remove('en-mode');
-            }
+        function toggleCustomInput(selectId, inputId) {
+            const val = document.getElementById(selectId).value;
+            document.getElementById(inputId).style.display = (val === 'OTHER') ? 'block' : 'none';
         }
 
-        document.querySelectorAll('[data-ur]').forEach(el => {
-            el.innerText = el.getAttribute('data-' + lang);
-        });
-    }
-
-    async function handleAISubmit() {
-        const promptEl = document.getElementById('ai-prompt');
-        const cityEl = document.getElementById('city-select');
-        if (!promptEl || !promptEl.value.trim()) {
-            alert('براہ کرم پہلے سفر کی تفصیل لکھیں! / Please enter trip details first!');
-            return;
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
         }
-        if (!db) { alert('Database connection error.'); return; }
 
-        const { error } = await db.from('Bookings').insert([{
-            name: 'AI Quick Request',
-            pickup_location: promptEl.value.trim(),
-            city: cityEl ? cityEl.value : 'Not specified',
-            vehicle_type: 'AI Suggested',
-            trip_type: 'AI Box'
-        }]);
-
-        if (error) {
-            alert('خرابی: ' + error.message);
-        } else {
-            alert('✅ آپ کی درخواست موصول ہو گئی ہے! ہمارا نمائندہ جلد رابطہ کرے گا۔');
-            promptEl.value = '';
+        function switchRideType(type, el) {
+            currentRideType = type;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('local-fields').style.display = (type === 'local') ? 'block' : 'none';
+            document.getElementById('intercity-fields').style.display = (type === 'intercity') ? 'block' : 'none';
         }
-    }
 
-    async function handleBookingSubmit() {
-        const nameEl = document.getElementById('cust-name');
-        const phoneEl = document.getElementById('cust-phone');
-        const pickupEl = document.getElementById('pickup-loc');
-        const cityEl = document.getElementById('city-select');
-
-        if (!nameEl || !pickupEl || !nameEl.value.trim() || !pickupEl.value.trim()) {
-            alert('براہ کرم اپنا نام اور پک اپ کی جگہ لکھیں!');
-            return;
+        function selectV(el, vName) {
+            selectedVehicle = vName;
+            document.querySelectorAll('.v-item').forEach(v => v.classList.remove('active'));
+            el.classList.add('active');
         }
-        if (!db) { alert('Database connection error.'); return; }
 
-        const phoneVal = phoneEl ? phoneEl.value.trim() : '';
-
-        const { error } = await db.from('Bookings').insert([{
-            name: nameEl.value.trim() + (phoneVal ? ' (' + phoneVal + ')' : ''),
-            pickup_location: pickupEl.value.trim(),
-            city: cityEl ? cityEl.value : 'Not specified',
-            vehicle_type: currentVehicle,
-            trip_type: currentTripType
-        }]);
-
-        if (error) {
-            alert('خرابی: ' + error.message);
-        } else {
-            alert('✅ مبارک ہو! آپ کی سواری بک ہو گئی ہے۔');
-            nameEl.value = '';
-            if(phoneEl) phoneEl.value = '';
-            pickupEl.value = '';
+        // پاکستانی موبائل نمبر چیک کرنے کا فنکشن (03 سے شروع اور 11 ہندسے)
+        function isValidPakPhone(phone) {
+            const cleanPhone = phone.replace(/\s+/g, '');
+            return /^03[0-9]{9}$/.test(cleanPhone);
         }
-    }
 
-    async function handleDriverSubmit() {
-        const nameEl = document.getElementById('drv-name');
-        const phoneEl = document.getElementById('drv-phone');
-        const cnicEl = document.getElementById('drv-cnic');
-        const vehicleEl = document.getElementById('drv-vehicle');
-        const cityEl = document.getElementById('drv-city');
-
-        if (!nameEl || !phoneEl || !cnicEl || !nameEl.value.trim() || !phoneEl.value.trim() || !cnicEl.value.trim()) {
-            alert('براہ کرم نام، نمبر اور شناختی کارڈ لازمی درج کریں!');
-            return;
-        }
-        if (!db) { alert('Database connection error.'); return; }
-
-        const vehicleVal = vehicleEl ? vehicleEl.value.trim() : '';
-        const cityVal = cityEl ? cityEl.value.trim() : '';
-
-        const { error } = await db.from('Drivers').insert([{
-            name: nameEl.value.trim(),
-            phone: phoneEl.value.trim(),
-            cnic: cnicEl.value.trim(),
-            license: vehicleVal + ' - ' + cityVal
-        }]);
-
-        if (error) {
-            alert('خرابی: ' + error.message);
-        } else {
-            alert('✅ ڈرائیور رجسٹریشن مکمل ہو گئی! ہم جلد رابطہ کریں گے۔');
-            nameEl.value = '';
-            phoneEl.value = '';
-            cnicEl.value = '';
-            if(vehicleEl) vehicleEl.value = '';
-            if(cityEl) cityEl.value = '';
-        }
-    }
-
-    async function handleComplaintSubmit() {
-        const nameEl = document.getElementById('cmp-name');
-        const phoneEl = document.getElementById('cmp-phone');
-        const msgEl = document.getElementById('cmp-msg');
-
-        if (!nameEl || !msgEl || !nameEl.value.trim() || !msgEl.value.trim()) {
-            alert('براہ کرم نام اور شکایت لکھیں!');
-            return;
-        }
-        if (!db) { alert('Database connection error.'); return; }
-
-        const phoneVal = phoneEl ? phoneEl.value.trim() : '';
-
-        const { error } = await db.from('Complaints').insert([{
-            name: nameEl.value.trim() + (phoneVal ? ' (' + phoneVal + ')' : ''),
-            complaint_text: msgEl.value.trim()
-        }]);
-
-        if (error) {
-            alert('خرابی: ' + error.message);
-        } else {
-            alert('✅ آپ کی شکایت درج کر لی گئی ہے۔ شکریہ!');
-            nameEl.value = '';
-            if(phoneEl) phoneEl.value = '';
-            msgEl.value = '';
-        }
-    }
-    </script>
+        function suggestRide() {
+            const text = document.getElementById('ai-prompt').value.trim();
+            const resBox = document.getElementById('ai-result');
+            if (!text) return alert("براہ کرم پہلے اپنا سفر لکھیں۔");
     
