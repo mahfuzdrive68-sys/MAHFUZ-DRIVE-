@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ایڈمن پینل - محفوظ ڈرائیو</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const supabaseUrl = 'https://iwqngknjyolswbfkflii.supabase.co';
+      const supabaseKey = 'sb_publishable_thux2wg6hdfumeyctpm_w_ppCkr1';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      // اپنا خفیہ پن کوڈ یہاں تبدیل کر سکتے ہیں
+      const ADMIN_PIN = "7860";
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+        body { background-color: #eef2f0; color: #222; padding-bottom: 40px; }
+        
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; background: #06311b; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
+        .login-box { background: white; color: #333; padding: 25px; border-radius: 16px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .login-box input { width: 100%; padding: 12px; font-size: 18px; text-align: center; letter-spacing: 5px; border: 2px solid #0b4d2c; border-radius: 8px; margin: 15px 0; }
+        
+        /* Header */
+        .header { background: #06311b; color: white; padding: 18px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-size: 18px; }
+        .btn-refresh { background: #d4af37; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+
+        /* Stats Grid */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; }
+        .stat-card { background: white; padding: 12px 8px; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 20px; font-weight: 700; color: #0b4d2c; }
+        .stat-lbl { font-size: 11px; color: #666; }
+
+        /* Tabs */
+        .tabs { display: flex; background: white; margin: 0 12px 12px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; color: #666; }
+        .tab.active { color: #0b4d2c; border-bottom-color: #0b4d2c; background: #f4faf6; }
+
+        /* Cards */
+        .list-container { padding: 0 12px; }
+        .item-card { background: white; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-right: 4px solid #0b4d2c; }
+        .item-card.pending { border-right-color: #e67e22; }
+        .item-card.completed { border-right-color: #27ae60; opacity: 0.85; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .bg-orange { background: #fdebd0; color: #d35400; }
+        .bg-green { background: #d4efdf; color: #1e8449; }
+        .bg-red { background: #fadbd8; color: #c0392b; }
+
+        .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-sm { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; }
+        .btn-call { background: #2980b9; color: white; }
+        .btn-ok { background: #27ae60; color: white; }
+        .btn-warn { background: #e67e22; color: white; }
+        .btn-del { background: #c0392b; color: white; }
+
+        /* Doc Images */
+        .doc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; }
+        .doc-link { background: #f0f4f8; padding: 6px; border-radius: 6px; font-size: 11px; text-align: center; color: #2980b9; text-decoration: none; font-weight: 600; border: 1px solid #d0dce5; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN OVERLAY -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:#0b4d2c; margin-bottom:5px;">🔐 ایڈمن لاگ ان</h2>
+            <p style="font-size:12px; color:#666;">صرف محفوظ ڈرائیو انتظامیہ کے لیے</p>
+            <input type="password" id="pin-input" maxlength="6" placeholder="••••">
+            <button class="btn-sm btn-ok" style="width:100%; padding:12px; font-size:14px;" onclick="checkPin()">کھولیں</button>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="dashboard" style="display:none;">
+        <div class="header">
+            <h1>🛡️ محفوظ ڈرائیو کنٹرول روم</h1>
+            <button class="btn-refresh" onclick="loadAllData()">🔄 تازہ کریں</button>
+        </div>
+
+        <!-- Summary Counters -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-num" id="stat-bookings">0</div>
+                <div class="stat-lbl">نئی بکنگز</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="stat-drivers">0</div>
+                <div class="stat-lbl">دستیاب ڈرائیور</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="stat-complaints">0</div>
+                <div class="stat-lbl">کل شکایات</div>
+            </div>
+        </div>
+
+        <!-- Section Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchSection('sec-bookings', this)">🚖 بکنگز</div>
+            <div class="tab" onclick="switchSection('sec-drivers', this)">🪪 ڈرائیورز</div>
+            <div class="tab" onclick="switchSection('sec-complaints', this)">⚠️ شکایات</div>
+        </div>
+
+        <!-- 1. BOOKINGS SECTION -->
+        <div id="sec-bookings" class="list-container"></div>
+
+        <!-- 2. DRIVERS SECTION -->
+        <div id="sec-drivers" class="list-container" style="display:none;"></div>
+
+        <!-- 3. COMPLAINTS SECTION -->
+        <div id="sec-complaints" class="list-container" style="display:none;"></div>
+    </div>
+
+    <script>
+        function checkPin() {
+            const val = document.getElementById('pin-input').value;
+            if (val === ADMIN_PIN) {
+                sessionStorage.setItem('mahfuz_admin', 'true');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadAllData();
+            } else {
+                alert("❌ غلط پن کوڈ!");
+            }
+        }
+
+        window.onload = function() {
+            if (sessionStorage.getItem('mahfuz_admin') === 'true') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadAllData();
+            }
+        };
+
+        function switchSection(secId, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('sec-bookings').style.display = 'none';
+            document.getElementById('sec-drivers').style.display = 'none';
+            document.getElementById('sec-complaints').style.display = 'none';
+            document.getElementById(secId).style.display = 'block';
+        }
+
+        async function loadAllData() {
+            await loadBookings();
+            await loadDrivers();
+            await loadComplaints();
+        }
+
+        // 1. بکنگز لوڈ کرنا
+        async function loadBookings() {
+            const { data, error } = await supabase.from('Bookings').select('*').order('created_at', { ascending: false });
+            const box = document.getElementById('sec-bookings');
+            if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
+
+            const pendingCount = data.filter(b => b.status === 'pending').length;
+            document.getElementById('stat-bookings').innerText = pendingCount;
+
+            if (data.length === 0) return box.innerHTML = `<p style="text-align:center; padding:20px; color:#666;">ابھی کوئی بکنگ موجود نہیں۔</p>`;
+
+            box.innerHTML = data.map(b => `
+                <div class="item-card ${b.status === 'completed' ? 'completed' : 'pending'}">
+                    <div class="row">
+                        <strong>👤 ${b.name || 'نامعلوم'} (${b.vehicle_type || 'سواری'})</strong>
+                        <span class="badge ${b.status === 'completed' ? 'bg-green' : 'bg-orange'}">
+                            ${b.status === 'completed' ? 'مکمل ہو گئی' : 'نئی بکنگ'}
+                        </span>
+                    </div>
+                    <div class="row" style="color:#555; font-size:12px;">
+                        <span>🏙️ ${b.city || ''} (${b.ride_type || ''})</span>
+                        <span>📞 ${b.phone || ''}</span>
+                    </div>
+                    <div style="background:#f8f9fa; padding:8px; border-radius:6px; font-size:12px; margin:6px 0;">
+                        <div>🟢 <b>پک اپ:</b> ${b.pickup_location || '-'}</div>
+                        <div style="margin-top:4px;">🔴 <b>منزل (ڈراپ):</b> ${b.drop_location || '-'}</div>
+                    </div>
+                    <div class="actions">
+                        <a href="tel:${b.phone}" class="btn-sm btn-call">📞 کال کریں</a>
+                        ${b.status !== 'completed' ? `<button class="btn-sm btn-ok" onclick="completeBooking(${b.id})">✅ سفر مکمل</button>` : ''}
+                        <button class="btn-sm btn-del" onclick="deleteRow('Bookings', ${b.id})">🗑️ حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 2. ڈرائیورز لوڈ کرنا
+        async function loadDrivers() {
+            const { data, error } = await supabase.from('Drivers').select('*').order('created_at', { ascending: false });
+            const box = document.getElementById('sec-drivers');
+            if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
+
+            const availCount = data.filter(d => d.is_available === true && d.status === 'approved').length;
+            document.getElementById('stat-drivers').innerText = availCount;
+
+            if (data.length === 0) return box.innerHTML = `<p style="text-align:center; padding:20px; color:#666;">کوئی ڈرائیور رجسٹرڈ نہیں۔</p>`;
+
+            box.innerHTML = data.map(d => `
+                <div class="item-card ${d.status === 'approved' ? 'completed' : 'pending'}">
+                    <div class="row">
+                        <strong>🚘 ${d.name} (${d.vehicle})</strong>
+                        <span class="badge ${d.status === 'approved' ? 'bg-green' : 'bg-orange'}">
+                            ${d.status === 'approved' ? 'تصدیق شدہ' : 'تصدیق باقی'}
+                        </span>
+                    </div>
+                    <div style="font-size:12px; color:#444; line-height:1.6;">
+                        <div>🏙️ <b>شہر:</b> ${d.city || '-'} | 📞 <b>فون:</b> ${d.phone}</div>
+                        <div>🪪 <b>شناختی کارڈ:</b> ${d.cnic_number || '-'} | <b>لائسنس:</b> ${d.license_number || '-'}</div>
+                        <div>🟢 <b>موجودہ حالت:</b> ${d.is_available ? 'آن لائن (فارغ)' : 'آف لائن / مصروف'}</div>
+                    </div>
+                    
+                    ${d.cnic_front_url ? `
+                    <div class="doc-grid">
+                        <a href="${d.cnic_front_url}" target="_blank" class="doc-link">🖼️ شناختی کارڈ (فرنٹ)</a>
+                        <a href="${d.cnic_back_url}" target="_blank" class="doc-link">🖼️ شناختی کارڈ (بیک)</a>
+                        <a href="${d.license_front_url}" target="_blank" class="doc-link">🖼️ لائسنس (فرنٹ)</a>
+                        <a href="${d.license_back_url}" target="_blank" class="doc-link">🖼️ لائسنس (بیک)</a>
+                    </div>` : ''}
+
+                    <div class="actions">
+                        <a href="tel:${d.phone}" class="btn-sm btn-call">📞 کال</a>
+                        ${d.status !== 'approved' ? `<button class="btn-sm btn-ok" onclick="approveDriver(${d.id})">✅ منظور کریں</button>` : ''}
+                        <button class="btn-sm btn-warn" onclick="toggleDriverAvail(${d.id}, ${!d.is_available})">
+                            ${d.is_available ? '🔴 مصروف کریں' : '🟢 دستیاب کریں'}
+                        </button>
+                        <button class="btn-sm btn-del" onclick="deleteRow('Drivers', ${d.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 3. شکایات لوڈ کرنا
+        async function loadComplaints() {
+            const { data, error } = await supabase.from('Complaints').select('*').order('created_at', { ascending: false });
+            const box = document.getElementById('sec-complaints');
+            if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
+
+            document.getElementById('stat-complaints').innerText = data.length;
+            if (data.length === 0) return box.innerHTML = `<p style="text-align:center; padding:20px; color:#666;">کوئی شکایت موجود نہیں۔</p>`;
+
+            box.innerHTML = data.map(c => `
+                <div class="item-card" style="border-right-color:#c0392b;">
+                    <div class="row">
+                        <strong>⚠️ ${c.name || 'صارف'}</strong>
+                        <span>📞 ${c.phone || ''}</span>
+                    </div>
+                    <p style="font-size:13px; background:#fff5f5; padding:8px; border-radius:6px; margin:6px 0;">${c.complaint_text || ''}</p>
+                    <div class="actions">
+                        <a href="tel:${c.phone}" class="btn-sm btn-call">📞 رابطہ کریں</a>
+                        <button class="btn-sm btn-del" onclick="deleteRow('Complaints', ${c.id})">🗑️ حل ہو گئی / حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function completeBooking(id) {
+            await supabase.from('Bookings').update({ status: 'completed' }).eq('id', id);
+            loadBookings();
+        }
+
+        async function approveDriver(id) {
+            await supabase.from('Drivers').update({ status: 'approved', is_available: true }).eq('id', id);
+            loadDrivers();
+        }
+
+        async function toggleDriverAvail(id, newState) {
+            await supabase.from('Drivers').update({ is_available: newState }).eq('id', id);
+            loadDrivers();
+        }
+
+        async function deleteRow(table, id) {
+            if (!confirm("کیا آپ واقعی یہ ریکارڈ حذف کرنا چاہتے ہیں؟")) return;
+            await supabase.from(table).delete().eq('id', id);
+            loadAllData();
+        }
+    </script>
+</body>
+</html>
+  
