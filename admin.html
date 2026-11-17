@@ -9,7 +9,7 @@
     <script>
       const supabaseUrl = 'https://iwqngknjyolswbfkflii.supabase.co';
       const supabaseKey = 'sb_publishable_thux2wg6hdfumeyctpm_w_ppCkr1';
-      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
       // اپنا خفیہ پن کوڈ یہاں تبدیل کر سکتے ہیں
       const ADMIN_PIN = "0786";
@@ -115,18 +115,17 @@
     </div>
 
     <script>
-function checkPin() {
-    const val = document.getElementById('pin-input').value.trim();
-    if (val === ADMIN_PIN.toString().trim()) {
-        sessionStorage.setItem('mahfuz_admin', 'true');
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        loadAllData();
-    } else {
-        alert("❌ غلط پن کوڈ!");
-    }
-}
-        
+        function checkPin() {
+            const val = document.getElementById('pin-input').value.trim();
+            if (val === ADMIN_PIN.toString().trim()) {
+                sessionStorage.setItem('mahfuz_admin', 'true');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadAllData();
+            } else {
+                alert("❌ غلط پن کوڈ!");
+            }
+        }
 
         window.onload = function() {
             if (sessionStorage.getItem('mahfuz_admin') === 'true') {
@@ -153,7 +152,7 @@ function checkPin() {
 
         // 1. بکنگز لوڈ کرنا
         async function loadBookings() {
-            const { data, error } = await supabase.from('Bookings').select('*').order('created_at', { ascending: false });
+            const { data, error } = await supabaseClient.from('Bookings').select('*').order('created_at', { ascending: false });
             const box = document.getElementById('sec-bookings');
             if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
 
@@ -189,7 +188,7 @@ function checkPin() {
 
         // 2. ڈرائیورز لوڈ کرنا
         async function loadDrivers() {
-            const { data, error } = await supabase.from('Drivers').select('*').order('created_at', { ascending: false });
+            const { data, error } = await supabaseClient.from('Drivers').select('*').order('created_at', { ascending: false });
             const box = document.getElementById('sec-drivers');
             if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
 
@@ -234,7 +233,7 @@ function checkPin() {
 
         // 3. شکایات لوڈ کرنا
         async function loadComplaints() {
-            const { data, error } = await supabase.from('Complaints').select('*').order('created_at', { ascending: false });
+            const { data, error } = await supabaseClient.from('Complaints').select('*').order('created_at', { ascending: false });
             const box = document.getElementById('sec-complaints');
             if (error) return box.innerHTML = `<p>خرابی: ${error.message}</p>`;
 
@@ -257,26 +256,26 @@ function checkPin() {
         }
 
         async function completeBooking(id) {
-            await supabase.from('Bookings').update({ status: 'completed' }).eq('id', id);
+            await supabaseClient.from('Bookings').update({ status: 'completed' }).eq('id', id);
             loadBookings();
         }
 
         async function approveDriver(id) {
-            await supabase.from('Drivers').update({ status: 'approved', is_available: true }).eq('id', id);
+            await supabaseClient.from('Drivers').update({ status: 'approved', is_available: true }).eq('id', id);
             loadDrivers();
         }
 
         async function toggleDriverAvail(id, newState) {
-            await supabase.from('Drivers').update({ is_available: newState }).eq('id', id);
+            await supabaseClient.from('Drivers').update({ is_available: newState }).eq('id', id);
             loadDrivers();
         }
 
         async function deleteRow(table, id) {
             if (!confirm("کیا آپ واقعی یہ ریکارڈ حذف کرنا چاہتے ہیں؟")) return;
-            await supabase.from(table).delete().eq('id', id);
+            await supabaseClient.from(table).delete().eq('id', id);
             loadAllData();
         }
     </script>
 </body>
 </html>
-  
+
