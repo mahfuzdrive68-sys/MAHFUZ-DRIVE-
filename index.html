@@ -304,6 +304,35 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
 .md-division-districts,.md-division-count{display:none!important}
 .md-region-subtitle{font-size:11px;font-weight:800;color:#f3d995;margin:8px 0;text-align:center}
 
+
+/* Refined MAHFUZ DRIVE UI: higher contrast, calmer spacing, consistent premium controls. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+body{background:radial-gradient(ellipse at 50% -12%,rgba(226,184,79,.16),transparent 38rem),linear-gradient(180deg,#080b10 0%,#101722 52%,#090d13 100%)!important;color:#f4f6fa!important;}
+.header{background:linear-gradient(130deg,#080b10 0%,#182231 55%,#0b1018 100%)!important;border-bottom:2px solid rgba(226,184,79,.8)!important;}
+.card{background:linear-gradient(155deg,rgba(27,35,47,.98),rgba(15,21,30,.99))!important;border:1px solid rgba(226,184,79,.14)!important;box-shadow:0 14px 36px rgba(0,0,0,.28)!important;}
+input,select,textarea{font-family:Inter,'Noto Sans Arabic',Arial,sans-serif!important;line-height:1.45!important;}
+button,.btn-green,.tab,.nav-item{font-family:Inter,'Noto Sans Arabic',Arial,sans-serif!important;}
+label{letter-spacing:.12px!important;}
+.md-admin-note{color:#aeb8c6;font-size:12px;line-height:1.7;margin:8px 0 14px;}
+.md-admin-message{color:#f1d78f;font-size:12px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere;}
+.md-admin-message.error{color:#ff9b9b;}
+.md-admin-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.md-admin-actions,.md-admin-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.md-admin-small{border:1px solid rgba(226,184,79,.42);background:#222b38;color:#f3d78f;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer;}
+.md-admin-small:disabled{opacity:.55;}
+.md-admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 22px;}
+.md-admin-stat{background:#0d131c;border:1px solid #303b49;border-radius:14px;padding:13px 8px;text-align:center;display:flex;flex-direction:column;gap:3px;}
+.md-admin-stat b{font-size:23px;color:#f3d78f;}.md-admin-stat span{font-size:11px;color:#b6c0ce;}
+.md-admin-section{margin-top:20px;}.md-admin-section h3{color:#f3d78f;font-size:15px;margin:0 0 10px;}
+.md-admin-record{background:#0d131c;border:1px solid #303b49;border-radius:13px;padding:13px;margin:0 0 9px;}
+.md-admin-record-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;color:#f3f5f8;font-size:13px;}
+.md-admin-status{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#f3d78f;background:rgba(226,184,79,.1);border:1px solid rgba(226,184,79,.25);border-radius:20px;padding:4px 8px;}
+.md-admin-details{color:#aeb8c6;font-size:11px;line-height:1.7;margin:9px 0;overflow-wrap:anywhere;}
+.md-admin-controls select{max-width:180px;margin:0;min-height:40px;padding:8px 10px!important;font-size:12px!important;}
+.md-admin-security{padding:12px 15px;border:1px solid rgba(226,184,79,.18);border-radius:13px;background:rgba(226,184,79,.045);}
+[hidden]{display:none!important;}
+@media(max-width:440px){.md-admin-stats{gap:6px}.md-admin-stat b{font-size:20px}.md-admin-actions{width:100%}.md-admin-actions button{flex:1}.md-admin-record-head{display:block}.md-admin-status{display:inline-block;margin-top:7px}}
+
 </style>
 </head>
 <body>
@@ -459,6 +488,30 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
         </div>
     </div>
 
+
+    <!-- ADMIN PAGE: protected by Supabase Auth + app_metadata role check -->
+    <div id="page-admin" class="page">
+        <div class="header"><span class="badge">🔐 Restricted access</span><h1>MAHFUZ DRIVE Admin</h1><p>Secure operations dashboard</p></div>
+        <div class="container">
+            <div class="card" id="md-admin-login-card">
+                <div class="card-title">Admin sign in</div>
+                <p class="md-admin-note">Use an existing Supabase Auth account assigned the server-controlled app_metadata role <b>admin</b>.</p>
+                <label for="md-admin-email">Admin email</label><input id="md-admin-email" type="email" autocomplete="username" placeholder="admin@example.com" dir="ltr">
+                <label for="md-admin-password">Password</label><input id="md-admin-password" type="password" autocomplete="current-password" placeholder="Enter password" dir="ltr">
+                <button class="btn-green" id="md-admin-login" type="button">Sign in securely</button>
+                <div id="md-admin-login-message" class="md-admin-message" role="status" aria-live="polite"></div>
+            </div>
+            <div class="card" id="md-admin-dashboard" hidden>
+                <div class="md-admin-toolbar"><div><div class="card-title">Operations overview</div><p id="md-admin-user" class="md-admin-note"></p></div><div class="md-admin-actions"><button type="button" class="md-admin-small" id="md-admin-refresh">Refresh</button><button type="button" class="md-admin-small" id="md-admin-logout">Sign out</button></div></div>
+                <div class="md-admin-stats" id="md-admin-stats"></div><div id="md-admin-dashboard-message" class="md-admin-message" role="status" aria-live="polite"></div>
+                <div class="md-admin-section"><h3>Bookings</h3><div id="md-admin-bookings" class="md-admin-list">Sign in to load bookings.</div></div>
+                <div class="md-admin-section"><h3>Driver applications</h3><div id="md-admin-drivers" class="md-admin-list">Sign in to load drivers.</div></div>
+                <div class="md-admin-section"><h3>Complaints & feedback</h3><div id="md-admin-complaints" class="md-admin-list">Sign in to load complaints.</div></div>
+            </div>
+            <div class="md-admin-note md-admin-security">Security note: the dashboard never contains a Supabase service-role key. Admin access and data changes must also be protected by Supabase Row Level Security (RLS).</div>
+        </div>
+        <div class="container"><div class="card md-admin-entry"><div class="card-title">🔐 Admin controls</div><p class="md-admin-note">Restricted management access for authorised administrators.</p><button type="button" class="btn-green" id="md-open-admin">Open Admin Panel</button></div></div>
+    </div>
 
     <!-- PAGE: RATINGS -->
     <div id="page-ratings" class="page">
@@ -728,12 +781,16 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
                 });
             });
 
-            // AI تجویز بٹن
-            document.getElementById('btn-suggest').addEventListener('click', function() {
-                const text = document.getElementById('ai-prompt').value.trim();
+            // Optional trip-suggestion controls: bind only when this optional section exists.
+            // Previously btn-suggest was absent in the page, causing a TypeError that stopped
+            // initialization before Booking, Driver Registration and Complaints listeners were attached.
+            const suggestButton = document.getElementById('btn-suggest');
+            if (suggestButton) suggestButton.addEventListener('click', function() {
+                const promptEl = document.getElementById('ai-prompt');
                 const resBox = document.getElementById('ai-result');
+                if (!promptEl || !resBox) return;
+                const text = promptEl.value.trim();
                 if (!text) return alert("براہ کرم پہلے اپنا سفر لکھیں۔");
-                
                 let suggestion = "آپ کے سفر کے لیے 'کار (Car)' سب سے آرام دہ اور محفوظ رہے گی۔";
                 if (text.includes("1") || text.includes("اکیلا") || text.includes("بائیک")) {
                     suggestion = "اکیلے مسافر کے لیے 'موٹر سائیکل' تیز ترین اور کم خرچ سواری ہے۔";
@@ -748,64 +805,54 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
                 return /^03[0-9]{9}$/.test(phone.replace(/\s+/g, ''));
             }
 
-            // بکنگ بٹن
+            // Booking: validate, submit, and always restore the button after any network/database error.
             document.getElementById('btn-book').addEventListener('click', async function() {
-                if (!db) return alert("انٹرنیٹ یا ڈیٹا بیس سے رابطہ نہیں ہو سکا، صفحہ ریفریش کریں۔");
+                const button = this;
+                if (!db) return alert("ڈیٹا بیس سے رابطہ دستیاب نہیں۔ انٹرنیٹ چیک کرکے دوبارہ کوشش کریں۔");
                 const name = document.getElementById('book-name').value.trim();
                 const phone = document.getElementById('book-phone').value.trim();
                 let city = "", pickup = "", drop = "";
-
                 if (name.length < 3) return alert("براہ کرم اپنا درست نام لکھیں۔");
-                if (!isValidPakPhone(phone)) return alert("خرابی: صرف پاکستان کا درست 11 ہندسوں والا موبائل نمبر درج کریں (مثلاً 03001234567)۔");
-
+                if (!isValidPakPhone(phone)) return alert("خرابی: درست پاکستانی موبائل نمبر درج کریں (مثلاً 03001234567)۔");
                 if (currentRideType === 'local') {
                     city = localCitySel.value;
                     const pSel = document.getElementById('local-pickup-select').value;
                     const dSel = document.getElementById('local-drop-select').value;
-                    pickup = (pSel === 'OTHER') ? document.getElementById('local-pickup-custom').value.trim() : pSel;
-                    drop = (dSel === 'OTHER') ? document.getElementById('local-drop-custom').value.trim() : dSel;
-
-                    if (!pickup || !drop) return alert("براہ کرم پک اپ اور ڈراپ آف (منزل) دونوں جگہیں منتخب کریں۔");
+                    pickup = pSel === 'OTHER' ? document.getElementById('local-pickup-custom').value.trim() : pSel;
+                    drop = dSel === 'OTHER' ? document.getElementById('local-drop-custom').value.trim() : dSel;
+                    if (!pickup || !drop) return alert("براہ کرم پک اپ اور منزل دونوں جگہیں منتخب کریں۔");
                 } else {
                     const fromCity = interFromSel.value;
                     const toCity = interToSel.value;
                     const pDet = document.getElementById('inter-pickup-detail').value.trim();
                     const dDet = document.getElementById('inter-drop-detail').value.trim();
-
-                    if (fromCity === toCity) return alert("شہر سے شہر سفر کے لیے روانگی اور منزل کے مختلف شہر منتخب کریں۔");
+                    if (!fromCity || !toCity || fromCity === toCity) return alert("شہر سے شہر سفر کے لیے مختلف روانگی اور منزل کے شہر منتخب کریں۔");
                     if (!pDet || !dDet) return alert("براہ کرم دونوں شہروں کی مخصوص جگہ لکھیں۔");
-
-                    city = `${fromCity} سے ${toCity}`;
-                    pickup = `${fromCity} (${pDet})`;
-                    drop = `${toCity} (${dDet})`;
+                    city = `${fromCity} سے ${toCity}`; pickup = `${fromCity} (${pDet})`; drop = `${toCity} (${dDet})`;
                 }
-
-                this.disabled = true;
-                this.innerText = "بکنگ بھیجی جا رہی ہے...";
-
-                const ratingCode = 'MD-' + Array.from(crypto.getRandomValues(new Uint8Array(10)), b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
-                const { error } = await db.from('Bookings').insert([{
-                    rating_code: ratingCode,
-                    name: name,
-                    phone: phone,
-                    city: city,
-                    pickup_location: pickup,
-                    drop_location: drop,
-                    vehicle_type: selectedVehicle,
-                    ride_type: currentRideType === 'local' ? 'لوکل' : 'شہر سے شہر',
-                    status: 'pending'
-                }]);
-
-                this.disabled = false;
-                this.innerText = "ابھی بک کریں";
-
-                if (error) {
-                    alert("بکنگ میں مسئلہ آیا: " + error.message);
-                } else {
-                    try { localStorage.setItem('mahfuz_last_booking', JSON.stringify({ code: ratingCode, phone: phone })); } catch (e) {}
-                    alert("✅ آپ کی بکنگ کامیابی سے درج ہو گئی ہے! آپ کا Booking Reference: " + ratingCode + " — اسے محفوظ رکھیں۔ سفر مکمل ہونے کے بعد اسی ریفرنس اور فون نمبر سے ریٹنگ دیں۔");
-                    document.getElementById('book-name').value = "";
-                    document.getElementById('book-phone').value = "";
+                button.disabled = true; button.textContent = "بکنگ بھیجی جا رہی ہے...";
+                try {
+                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                    const bytes = new Uint8Array(10);
+                    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+                    else for (let i=0;i<bytes.length;i++) bytes[i]=Math.floor(Math.random()*256);
+                    const ratingCode = 'MD-' + Array.from(bytes, b => chars[b % chars.length]).join('');
+                    const { error } = await db.from('Bookings').insert([{
+                        rating_code: ratingCode, name, phone, city,
+                        pickup_location: pickup, drop_location: drop,
+                        vehicle_type: selectedVehicle,
+                        ride_type: currentRideType === 'local' ? 'لوکل' : 'شہر سے شہر',
+                        status: 'pending'
+                    }]);
+                    if (error) throw error;
+                    try { localStorage.setItem('mahfuz_last_booking', JSON.stringify({ code: ratingCode, phone })); } catch (e) {}
+                    alert("✅ آپ کی بکنگ کامیابی سے درج ہو گئی ہے! Booking Reference: " + ratingCode + " — اسے محفوظ رکھیں۔");
+                    document.getElementById('book-name').value = ''; document.getElementById('book-phone').value = '';
+                } catch (err) {
+                    console.error('Booking submission error:', err);
+                    alert("بکنگ جمع نہیں ہو سکی: " + (err.message || 'Database/network error'));
+                } finally {
+                    button.disabled = false; button.textContent = "ابھی بک کریں";
                 }
             });
 
@@ -975,37 +1022,132 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
                 chooseRating(0);
             });
 
-            // شکایت بٹن
+            // Complaints: insert into the existing Complaints table and show actual database errors.
             document.getElementById('btn-comp').addEventListener('click', async function() {
-                if (!db) return alert("ڈیٹا بیس سے رابطہ نہیں ہو سکا، صفحہ ریفریش کریں۔");
+                const button = this;
+                if (!db) return alert("ڈیٹا بیس سے رابطہ دستیاب نہیں۔ انٹرنیٹ چیک کرکے دوبارہ کوشش کریں۔");
                 const name = document.getElementById('comp-name').value.trim();
                 const phone = document.getElementById('comp-phone').value.trim();
-                const text = document.getElementById('comp-text').value.trim();
-
+                const complaintText = document.getElementById('comp-text').value.trim();
                 if (name.length < 3) return alert("براہ کرم اپنا نام لکھیں۔");
-                if (!isValidPakPhone(phone)) return alert("خرابی: صرف درست پاکستانی موبائل نمبر (03xxxxxxxxx) درج کریں۔");
-                if (text.length < 5) return alert("براہ کرم اپنی شکایت تفصیل سے لکھیں۔");
-
-                this.disabled = true;
-                this.innerText = "شکایت بھیجی جا رہی ہے...";
-
-                const { error } = await db.from('Complaints').insert([{
-                    name: name,
-                    phone: phone,
-                    complaint_text: text
-                }]);
-
-                this.disabled = false;
-                this.innerText = "شکایت بھیجیں";
-
-                if (error) {
-                    alert("شکایت بھیجنے میں خرابی: " + error.message);
-                } else {
-                    alert("✅ آپ کی شکایت موصول ہو گئی ہے، ہم جلد اس پر کارروائی کریں گے۔");
-                    document.getElementById('comp-name').value = "";
-                    document.getElementById('comp-phone').value = "";
-                    document.getElementById('comp-text').value = "";
+                if (!isValidPakPhone(phone)) return alert("درست پاکستانی موبائل نمبر درج کریں (03xxxxxxxxx)۔");
+                if (complaintText.length < 5) return alert("براہ کرم اپنی شکایت تفصیل سے لکھیں۔");
+                button.disabled = true; button.textContent = "شکایت بھیجی جا رہی ہے...";
+                try {
+                    const { error } = await db.from('Complaints').insert([{ name, phone, complaint_text: complaintText }]);
+                    if (error) throw error;
+                    alert("✅ آپ کی شکایت موصول ہو گئی ہے۔");
+                    document.getElementById('comp-name').value = ''; document.getElementById('comp-phone').value = ''; document.getElementById('comp-text').value = '';
+                } catch (err) {
+                    console.error('Complaint submission error:', err);
+                    alert("شکایت جمع نہیں ہو سکی: " + (err.message || 'Database/network error'));
+                } finally {
+                    button.disabled = false; button.textContent = "شکایت بھیجیں";
                 }
+            });
+
+
+            // Secure Admin Panel: authenticated user must have server-controlled app_metadata.role = 'admin'.
+            const adminLoginCard = document.getElementById('md-admin-login-card');
+            const adminDashboard = document.getElementById('md-admin-dashboard');
+            const adminLoginMessage = document.getElementById('md-admin-login-message');
+            const adminStatus = (el, msg, isError=false) => { if (!el) return; el.textContent = msg; el.classList.toggle('error', !!isError); };
+            function openPage(pageId) {
+                document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.id === pageId));
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                window.scrollTo({top:0,behavior:'smooth'});
+            }
+            document.getElementById('md-open-admin')?.addEventListener('click', () => openPage('page-admin'));
+            document.getElementById('md-admin-login')?.addEventListener('click', async function() {
+                if (!db || !db.auth) return adminStatus(adminLoginMessage, 'Supabase Auth is unavailable. Check the network and Supabase configuration.', true);
+                const email = document.getElementById('md-admin-email').value.trim();
+                const password = document.getElementById('md-admin-password').value;
+                if (!email || !password) return adminStatus(adminLoginMessage, 'Enter your admin email and password.', true);
+                const button = this; button.disabled = true; button.textContent = 'Signing in…';
+                try {
+                    const {data, error} = await db.auth.signInWithPassword({email, password});
+                    if (error) throw error;
+                    const user = data?.user;
+                    if (!user || user.app_metadata?.role !== 'admin') {
+                        await db.auth.signOut();
+                        throw new Error('This account is not authorised as an admin. Ask the project owner to assign app_metadata.role = admin securely.');
+                    }
+                    adminLoginCard.hidden = true; adminDashboard.hidden = false;
+                    document.getElementById('md-admin-user').textContent = user.email || 'Authorised administrator';
+                    adminStatus(adminLoginMessage, '');
+                    await loadAdminDashboard();
+                } catch (err) {
+                    console.error('Admin sign-in error:', err);
+                    adminStatus(adminLoginMessage, err.message || 'Admin sign-in failed.', true);
+                } finally { button.disabled = false; button.textContent = 'Sign in securely'; }
+            });
+            function safeCell(value) { return value === null || value === undefined || value === '' ? '—' : String(value); }
+            function renderAdminRows(targetId, rows, type) {
+                const target = document.getElementById(targetId); target.innerHTML = '';
+                if (!rows || !rows.length) { target.textContent = 'No records found.'; return; }
+                rows.forEach(row => {
+                    const item = document.createElement('article'); item.className = 'md-admin-record';
+                    const heading = document.createElement('div'); heading.className = 'md-admin-record-head';
+                    const title = document.createElement('strong');
+                    title.textContent = type === 'booking' ? `${safeCell(row.name)} · ${safeCell(row.rating_code || row.id)}` : type === 'driver' ? `${safeCell(row.name)} · ${safeCell(row.phone)}` : `${safeCell(row.name)} · ${safeCell(row.phone)}`;
+                    const status = document.createElement('span'); status.className = 'md-admin-status'; status.textContent = safeCell(row.status || 'received'); heading.append(title,status); item.appendChild(heading);
+                    const details = document.createElement('p'); details.className = 'md-admin-details';
+                    if (type === 'booking') details.textContent = `Phone: ${safeCell(row.phone)} | ${safeCell(row.city)} | Pickup: ${safeCell(row.pickup_location)} | Drop-off: ${safeCell(row.drop_location)} | Vehicle: ${safeCell(row.vehicle_type)} | Ride: ${safeCell(row.ride_type)}`;
+                    if (type === 'driver') details.textContent = `City: ${safeCell(row.city)} | Vehicle: ${safeCell(row.vehicle)} | Licence: ${safeCell(row.license_number)} | CNIC: ${row.cnic_number ? 'Submitted' : '—'} | Documents: ${[row.cnic_front_url,row.cnic_back_url,row.license_front_url,row.license_back_url].filter(Boolean).length}/4 uploaded`;
+                    if (type === 'complaint') details.textContent = safeCell(row.complaint_text || row.message || row.description);
+                    item.appendChild(details);
+                    if (type !== 'complaint' && row.id !== undefined && row.id !== null) {
+                        const controls = document.createElement('div'); controls.className = 'md-admin-controls';
+                        const select = document.createElement('select'); select.setAttribute('aria-label', `Update ${type} status`);
+                        const options = type === 'booking' ? [['pending','Pending'],['accepted','Accepted'],['completed','Completed'],['cancelled','Cancelled']] : [['pending','Pending'],['approved','Approved'],['rejected','Rejected']];
+                        options.forEach(([value,label]) => { const opt=document.createElement('option'); opt.value=value; opt.textContent=label; select.appendChild(opt); });
+                        select.value = options.some(o=>o[0]===row.status) ? row.status : 'pending';
+                        const save = document.createElement('button'); save.type='button'; save.className='md-admin-small'; save.textContent='Save status';
+                        save.addEventListener('click', async () => {
+                            save.disabled=true;
+                            try {
+                                const patch = type === 'driver' ? {status:select.value, is_available:false} : {status:select.value};
+                                const {error} = await db.from(type === 'booking' ? 'Bookings' : 'Drivers').update(patch).eq('id', row.id);
+                                if (error) throw error;
+                                status.textContent=select.value; adminStatus(document.getElementById('md-admin-dashboard-message'), 'Status updated.');
+                            } catch(err) { alert('Could not update status: '+(err.message||'Database error')); }
+                            finally { save.disabled=false; }
+                        });
+                        controls.append(select,save); item.appendChild(controls);
+                    }
+                    target.appendChild(item);
+                });
+            }
+            async function loadAdminDashboard() {
+                if (!db) return;
+                const ids = ['md-admin-bookings','md-admin-drivers','md-admin-complaints'];
+                ids.forEach(id => { const el=document.getElementById(id); el.textContent='Loading…'; });
+                try {
+                    const results = await Promise.all([
+                        db.from('Bookings').select('*').limit(100),
+                        db.from('Drivers').select('*').limit(100),
+                        db.from('Complaints').select('*').limit(100)
+                    ]);
+                    const names=['Bookings','Drivers','Complaints'];
+                    results.forEach((result,i)=>{ if(result.error) throw new Error(`${names[i]}: ${result.error.message}`); });
+                    const [bookings,drivers,complaints] = results.map(r=>r.data||[]);
+                    document.getElementById('md-admin-stats').innerHTML = '';
+                    [['Bookings',bookings.length],['Drivers',drivers.length],['Complaints',complaints.length]].forEach(([label,value])=>{
+                        const box=document.createElement('div'); box.className='md-admin-stat'; const num=document.createElement('b'); num.textContent=value; const cap=document.createElement('span'); cap.textContent=label; box.append(num,cap); document.getElementById('md-admin-stats').appendChild(box);
+                    });
+                    renderAdminRows('md-admin-bookings',bookings,'booking');
+                    renderAdminRows('md-admin-drivers',drivers,'driver');
+                    renderAdminRows('md-admin-complaints',complaints,'complaint');
+                } catch(err) {
+                    console.error('Admin dashboard load error:',err);
+                    ids.forEach(id=>{ const el=document.getElementById(id); el.textContent='Could not load records: '+(err.message||'Check Supabase Auth and RLS policies.'); });
+                }
+            }
+            document.getElementById('md-admin-refresh')?.addEventListener('click', loadAdminDashboard);
+            document.getElementById('md-admin-logout')?.addEventListener('click', async () => {
+                try { if (db?.auth) await db.auth.signOut(); } catch(e) { console.error(e); }
+                adminDashboard.hidden=true; adminLoginCard.hidden=false; document.getElementById('md-admin-password').value='';
+                adminStatus(adminLoginMessage,'You have signed out.');
             });
         });
     </script>
@@ -1014,8 +1156,8 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
 /* MAHFUZ DRIVE language preference: English is default; Urdu is selectable in Settings.
    UI text only is translated. Form values and Supabase payloads remain unchanged. */
 (function () {
-  const translations = {"ملتان ڈویژن":"Multan Division","بہاولپور ڈویژن":"Bahawalpur Division","ڈیرہ غازی خان ڈویژن":"Dera Ghazi Khan Division","اضلاع":"districts","تونسہ شریف":"Taunsa Sharif","ڈیرہ غازی خان":"Dera Ghazi Khan","کوٹ ادو":"Kot Addu","مظفر گڑھ":"Muzaffargarh","ملتان":"Multan","لیہ":"Layyah","راجن پور":"Rajanpur","بہاولپور":"Bahawalpur","رحیم یار خان":"Rahim Yar Khan","بہاولنگر":"Bahawalnagar","خانیوال":"Khanewal","وہاڑی":"Vehari","لودھراں":"Lodhran","کالج چوک":"College Chowk","لاری اڈہ تونسہ":"Taunsa Bus Stand","تحصیل ہیڈکوارٹر ہسپتال":"Tehsil Headquarters Hospital","سنگھڑ پل":"Sanghar Bridge","منگروٹھہ":"Mangrotha","وہوا":"Wahwa","مٹھے والی":"Mithe Wali","بستی بزدار":"Basti Buzdar","کوتوالی روڈ":"Kotwali Road","ڈی جی خان روڈ":"D.G. Khan Road","ٹریفک چوک":"Traffic Chowk","لاری اڈہ ڈی جی خان":"D.G. Khan Bus Stand","ٹیچنگ ہسپتال":"Teaching Hospital","غازی یونیورسٹی":"Ghazi University","چوک چورہٹہ":"Churhatta Chowk","خیابان سرور":"Khayaban-e-Sarwar","بلاک 1 تا 50":"Blocks 1–50","گدائی":"Gadai","سخی سرور":"Sakhi Sarwar","کوٹ چھٹہ":"Kot Chutta","جی ٹی روڈ چوک":"GT Road Chowk","لاری اڈہ کوٹ ادو":"Kot Addu Bus Stand","تحصیل ہسپتال":"Tehsil Hospital","سنانواں":"Sanawan","دائرہ دین پناہ":"Daira Din Panah","چوک سرور شہید":"Chowk Sarwar Shaheed","احسان پور":"Ehsanpur","تھرمال کالونی":"Thermal Colony","کچہری چوک":"Kachehri Chowk","لاری اڈہ مظفرگڑھ":"Muzaffargarh Bus Stand","ڈسٹرکٹ ہسپتال":"District Hospital","تلیری بائی پاس":"Taliरी Bypass","خان گڑھ":"Khangarh","علی پور":"Alipur","جتوئی":"Jatoi","شہر سلطان":"Shehr Sultan","چوک کچہری":"Kachehri Chowk","نشتر ہسپتال":"Nishtar Hospital","وہاڑی چوک":"Vehari Chowk","بوسن روڈ":"Bosan Road","بہاؤالدین زکریا یونیورسٹی":"Bahauddin Zakariya University","دولت گیٹ":"Daulat Gate","کینٹ":"Cantt","شاہ رکن عالم کالونی":"Shah Rukn-e-Alam Colony","شجاع آباد":"Shujaabad","جلال پور پیروالا":"Jalalpur Pirwala","کالج روڈ لیہ":"College Road, Layyah","لاری اڈہ لیہ":"Layyah Bus Stand","چوک اعظم":"Chowk Azam","کروڑ لعل عیسن":"Karor Lal Esan","فتح پور":"Fatehpur","کوٹ سلطان":"Kot Sultan","انڈس ہائی وے چوک":"Indus Highway Chowk","لاری اڈہ راجن پور":"Rajanpur Bus Stand","جام پور":"Jampur","فاضل پور":"Fazilpur","روجھان":"Rojhan","کوٹ مٹھن":"Kot Mithan","فرید گیٹ":"Fareed Gate","وکٹوریہ ہسپتال":"Victoria Hospital","اسلامیہ یونیورسٹی":"The Islamia University","ماڈل ٹاؤن":"Model Town","لاری اڈہ بہاولپور":"Bahawalpur Bus Stand","احمد پور شرقیہ":"Ahmedpur East","حاصل پور":"Hasilpur","یزمان":"Yazman","سٹی پل":"City Bridge","شیخ زید ہسپتال":"Sheikh Zayed Hospital","لاری اڈہ رحیم یار خان":"Rahim Yar Khan Bus Stand","صادق آباد":"Sadiqabad","خان پور":"Khanpur","لیاقت پور":"Liaquatpur","مین بازار":"Main Bazaar","چشتیاں":"Chishtian","ہارون آباد":"Haroonabad","فورٹ عباس":"Fort Abbas","منچن آباد":"Minchinabad","کچہری چوک خانیوال":"Kachehri Chowk, Khanewal","لاری اڈہ":"Bus Stand","میاں چنوں":"Mian Channu","کبیر والا":"Kabirwala","جہانیاں":"Jahanian","کلب چوک":"Club Chowk","بورے والا":"Burewala","میلسی":"Mailsi","مین چوک لودھراں":"Main Chowk, Lodhran","دنیا پور":"Dunyapur","کہروڑ پکا":"Kehror Pacca","🛡️ محفوظ و قابل اعتماد مسافر سروس":"🛡️ Safe & trusted passenger service","محفوظ ڈرائیو ٹیکسی سروس":"MAHFUZ DRIVE Taxi Service","پورے جنوبی پنجاب میں آپ کی اپنی باوقار مسافر سواری":"Your trusted ride across South Punjab","✨ اپنے الفاظ میں بتائیں":"✨ Describe your trip","مثال: کل صبح 8 بجے ہم 4 مسافر تونسہ شریف سے ملتان جانا چاہتے ہیں":"Example: Tomorrow at 8 AM, 4 passengers travelling from Taunsa Sharif to Multan","مناسب سواری تجویز کریں":"Suggest a suitable ride","لوکل (شہر کے اندر)":"Local (within city)","شہر سے شہر":"City to city","سواری منتخب کریں":"Choose your ride","موٹر سائیکل":"Motorcycle","پاسنجر رکشہ":"Passenger rickshaw","کار":"Car","منی بس":"Mini bus","شہر منتخب کریں (جنوبی پنجاب)":"Select city (South Punjab)","پک اپ علاقہ (کہاں سے بیٹھنا ہے)":"Pickup area","اپنے محلے یا چوک کا نام لکھیں":"Enter your neighbourhood or landmark","ڈراپ آف علاقہ (کہاں اترنا ہے / منزل)":"Drop-off area / destination","اپنی منزل کا نام لکھیں":"Enter your destination","روانگی کا شہر (کہاں سے جانا ہے)":"Departure city","پک اپ کی مخصوص جگہ (مثلاً لاری اڈہ یا گھر کا پتہ)":"Exact pickup point (e.g. bus station or home address)","منزل کا شہر (کس شہر جانا ہے)":"Destination city","منزل کی مخصوص جگہ (مثلاً نشتر ہسپتال ملتان)":"Exact destination (e.g. Nishtar Hospital, Multan)","مسافر کا نام":"Passenger name","اپنا مکمل نام لکھیں":"Enter your full name","پاکستانی موبائل نمبر (03 سے شروع کریں)":"Pakistan mobile number (starts with 03)","مثلاً: 03001234567":"Example: 03001234567","ابھی بک کریں":"Book now","📍 جنوبی پنجاب کے اضلاع (منتخب کرنے کے لیے ٹیپ کریں)":"📍 Service areas in South Punjab (tap to select)","شہر یا علاقہ منتخب کریں":"Select a city or area","جنوبی پنجاب کے تمام اضلاع میں سروس":"Service across South Punjab districts","سروس ایریاز":"Service Areas","ڈرائیور رجسٹریشن":"Driver registration","تصدیق شدہ ڈرائیور بنیں اور محفوظ ڈرائیو کے ساتھ باوقار روزگار کمائیں":"Register as a verified driver with MAHFUZ DRIVE","🪪 ذاتی اور گاڑی کی تفصیلات":"🪪 Personal and vehicle details","مکمل نام (مطابق شناختی کارڈ)":"Full name (as shown on CNIC)","پاکستانی موبائل نمبر":"Pakistan mobile number","شہر منتخب کریں":"Select city","شناختی کارڈ نمبر (13 ہندسے بغیر ڈیش کے)":"CNIC number (13 digits, without dashes)","مثلاً: 3210312345671":"Example: 3210312345671","مسافر سواری کی قسم":"Passenger vehicle type","-- سواری منتخب کریں --":"-- Select a vehicle --","منی بس / مسافر وین":"Mini bus / passenger van","ڈرائیونگ لائسنس نمبر":"Driving licence number","اپنا ڈرائیونگ لائسنس نمبر درج کریں":"Enter your driving licence number","📸 شناختی کارڈ اور لائسنس کی تصاویر (لازمی)":"📸 CNIC and driving licence photos (required)","1. شناختی کارڈ کی فرنٹ سائیڈ":"1. CNIC front side","2. شناختی کارڈ کی بیک سائیڈ":"2. CNIC back side","3. ڈرائیونگ لائسنس کی فرنٹ سائیڈ":"3. Driving licence front side","4. ڈرائیونگ لائسنس کی بیک سائیڈ":"4. Driving licence back side","تصدیق کے لیے درخواست جمع کریں":"Submit verification request","ایپ سیٹنگز":"App settings","معلومات اور ایپ انسٹال کرنے کا طریقہ":"App information and installation","⚙️ جنرل معلومات":"⚙️ General information","سروس کی نوعیت:":"Service type:","صرف مسافر ٹیکسی سروس":"Passenger taxi service only","ایپ ورژن:":"App version:","📲 موبائل اسکرین پر ایپ لگانے کا طریقہ":"📲 Install the app on your phone","اس ایپ کو بغیر کسی سیکیورٹی وارننگ کے اپنے موبائل میں چلانے کے لیے Google Chrome کے اوپر دائیں کونے میں موجود ":"To install this app on your phone, open the Google Chrome menu in the top-right corner, then choose ","تین نقطوں (⋮)":"the three-dot menu (⋮)"," پر کلک کریں اور ":" and select "," کو دبا دیں۔":" .","شکایات و تجاویز":"Complaints & feedback","ہماری بہتری کے لیے اپنی رائے دیں یا شکایت درج کروائیں":"Share feedback or submit a complaint","آپ کا نام":"Your name","اپنا نام لکھیں":"Enter your name","شکایت یا تجویز":"Complaint or suggestion","اپنی شکایت یا تجویز یہاں تفصیل سے لکھیں...":"Describe your complaint or suggestion here...","شکایت بھیجیں":"Submit complaint","بکنگ":"Booking","ڈرائیور":"Driver","سیٹنگز":"Settings","شکایات":"Complaints","✍️ دیگر علاقہ / خود لکھیں...":"✍️ Other area / enter manually...","📍":"📍","زبان:":"Language:","لوکل":"Local","بکنگ بھیجی جا رہی ہے...":"Sending booking...","دستاویزات اپ لوڈ ہو رہی ہیں، انتظار کریں...":"Uploading documents, please wait...","شکایت بھیجی جا رہی ہے...":"Sending complaint...","ریٹنگ":"Ratings","Ratings & Reviews":"Ratings & Reviews","⭐ Verified passenger feedback":"⭐ Verified passenger feedback","✍️ Rate your completed ride":"✍️ Rate your completed ride","Rate your completed ride and help improve MAHFUZ DRIVE":"Rate your completed ride and help improve MAHFUZ DRIVE","Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.":"Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.","Booking reference":"Booking reference","Booking phone number":"Booking phone number","Choose your rating":"Choose your rating","Select a star rating":"Select a star rating","Your review (optional)":"Your review (optional)","Tell us about your ride experience...":"Tell us about your ride experience...","Submit rating":"Submit rating","💬 Recent approved reviews":"💬 Recent approved reviews","Loading passenger reviews…":"Loading passenger reviews…","approved passenger ratings":"approved passenger ratings","FAIR & TRANSPARENT PRICING":"FAIR & TRANSPARENT PRICING","Per-kilometre fare":"Per-kilometre fare","Rate will be set by the administrator":"Rate will be set by the administrator","Each vehicle category has its own rate. The final fare will be calculated from the road distance.":"Each vehicle category has its own rate. The final fare will be calculated from the road distance.","Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.":"Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.","Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel.":"Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel."};
-  const reverseTranslations = {"Ratings & Reviews":"ریٹنگز اور تبصرے","⭐ Verified passenger feedback":"⭐ مسافروں کی تصدیق شدہ رائے","✍️ Rate your completed ride":"✍️ مکمل سفر کی ریٹنگ دیں","Rate your completed ride and help improve MAHFUZ DRIVE":"اپنے مکمل سفر کی ریٹنگ دیں اور محفوظ ڈرائیو کو بہتر بنائیں","Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.":"بکنگ کے بعد دیا گیا ریفرنس اور وہی فون نمبر درج کریں۔ ریٹنگ صرف سفر مکمل ہونے کے بعد دی جا سکتی ہے۔","Booking reference":"بکنگ ریفرنس","Booking phone number":"بکنگ والا فون نمبر","Choose your rating":"اپنی ریٹنگ منتخب کریں","Select a star rating":"اسٹار منتخب کریں","Your review (optional)":"آپ کا تبصرہ (اختیاری)","Tell us about your ride experience...":"اپنے سفر کے تجربے کے بارے میں بتائیں...","Submit rating":"ریٹنگ جمع کریں","💬 Recent approved reviews":"💬 حالیہ منظور شدہ تبصرے","Loading passenger reviews…":"مسافروں کے تبصرے لوڈ ہو رہے ہیں…","FAIR & TRANSPARENT PRICING":"منصفانہ اور واضح کرایہ","Per-kilometre fare":"فی کلومیٹر کرایہ","Rate will be set by the administrator":"ریٹ ایڈمن مقرر کرے گا","Each vehicle category has its own rate. The final fare will be calculated from the road distance.":"ہر گاڑی کا الگ ریٹ ہوگا۔ حتمی کرایہ سڑک کے فاصلے کے مطابق ہوگا۔","Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.":"ڈرائیور کی کمائی اور محفوظ ڈرائیو کا کمیشن ایڈمن پینل میں الگ مقرر کیا جا سکے گا۔","Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel.":"موٹر سائیکل، مسافر رکشہ، کار اور منی بس کے الگ فی کلومیٹر ریٹ ایڈمن پینل میں مقرر ہوں گے۔"};
+  const translations = {"ملتان ڈویژن":"Multan Division","بہاولپور ڈویژن":"Bahawalpur Division","ڈیرہ غازی خان ڈویژن":"Dera Ghazi Khan Division","اضلاع":"districts","تونسہ شریف":"Taunsa Sharif","ڈیرہ غازی خان":"Dera Ghazi Khan","کوٹ ادو":"Kot Addu","مظفر گڑھ":"Muzaffargarh","ملتان":"Multan","لیہ":"Layyah","راجن پور":"Rajanpur","بہاولپور":"Bahawalpur","رحیم یار خان":"Rahim Yar Khan","بہاولنگر":"Bahawalnagar","خانیوال":"Khanewal","وہاڑی":"Vehari","لودھراں":"Lodhran","کالج چوک":"College Chowk","لاری اڈہ تونسہ":"Taunsa Bus Stand","تحصیل ہیڈکوارٹر ہسپتال":"Tehsil Headquarters Hospital","سنگھڑ پل":"Sanghar Bridge","منگروٹھہ":"Mangrotha","وہوا":"Wahwa","مٹھے والی":"Mithe Wali","بستی بزدار":"Basti Buzdar","کوتوالی روڈ":"Kotwali Road","ڈی جی خان روڈ":"D.G. Khan Road","ٹریفک چوک":"Traffic Chowk","لاری اڈہ ڈی جی خان":"D.G. Khan Bus Stand","ٹیچنگ ہسپتال":"Teaching Hospital","غازی یونیورسٹی":"Ghazi University","چوک چورہٹہ":"Churhatta Chowk","خیابان سرور":"Khayaban-e-Sarwar","بلاک 1 تا 50":"Blocks 1–50","گدائی":"Gadai","سخی سرور":"Sakhi Sarwar","کوٹ چھٹہ":"Kot Chutta","جی ٹی روڈ چوک":"GT Road Chowk","لاری اڈہ کوٹ ادو":"Kot Addu Bus Stand","تحصیل ہسپتال":"Tehsil Hospital","سنانواں":"Sanawan","دائرہ دین پناہ":"Daira Din Panah","چوک سرور شہید":"Chowk Sarwar Shaheed","احسان پور":"Ehsanpur","تھرمال کالونی":"Thermal Colony","کچہری چوک":"Kachehri Chowk","لاری اڈہ مظفرگڑھ":"Muzaffargarh Bus Stand","ڈسٹرکٹ ہسپتال":"District Hospital","تلیری بائی پاس":"Taleeri Bypass","خان گڑھ":"Khangarh","علی پور":"Alipur","جتوئی":"Jatoi","شہر سلطان":"Shehr Sultan","چوک کچہری":"Kachehri Chowk","نشتر ہسپتال":"Nishtar Hospital","وہاڑی چوک":"Vehari Chowk","بوسن روڈ":"Bosan Road","بہاؤالدین زکریا یونیورسٹی":"Bahauddin Zakariya University","دولت گیٹ":"Daulat Gate","کینٹ":"Cantt","شاہ رکن عالم کالونی":"Shah Rukn-e-Alam Colony","شجاع آباد":"Shujaabad","جلال پور پیروالا":"Jalalpur Pirwala","کالج روڈ لیہ":"College Road, Layyah","لاری اڈہ لیہ":"Layyah Bus Stand","چوک اعظم":"Chowk Azam","کروڑ لعل عیسن":"Karor Lal Esan","فتح پور":"Fatehpur","کوٹ سلطان":"Kot Sultan","انڈس ہائی وے چوک":"Indus Highway Chowk","لاری اڈہ راجن پور":"Rajanpur Bus Stand","جام پور":"Jampur","فاضل پور":"Fazilpur","روجھان":"Rojhan","کوٹ مٹھن":"Kot Mithan","فرید گیٹ":"Fareed Gate","وکٹوریہ ہسپتال":"Victoria Hospital","اسلامیہ یونیورسٹی":"The Islamia University","ماڈل ٹاؤن":"Model Town","لاری اڈہ بہاولپور":"Bahawalpur Bus Stand","احمد پور شرقیہ":"Ahmedpur East","حاصل پور":"Hasilpur","یزمان":"Yazman","سٹی پل":"City Bridge","شیخ زید ہسپتال":"Sheikh Zayed Hospital","لاری اڈہ رحیم یار خان":"Rahim Yar Khan Bus Stand","صادق آباد":"Sadiqabad","خان پور":"Khanpur","لیاقت پور":"Liaquatpur","مین بازار":"Main Bazaar","چشتیاں":"Chishtian","ہارون آباد":"Haroonabad","فورٹ عباس":"Fort Abbas","منچن آباد":"Minchinabad","کچہری چوک خانیوال":"Kachehri Chowk, Khanewal","لاری اڈہ":"Bus Stand","میاں چنوں":"Mian Channu","کبیر والا":"Kabirwala","جہانیاں":"Jahanian","کلب چوک":"Club Chowk","بورے والا":"Burewala","میلسی":"Mailsi","مین چوک لودھراں":"Main Chowk, Lodhran","دنیا پور":"Dunyapur","کہروڑ پکا":"Kehror Pacca","🛡️ محفوظ و قابل اعتماد مسافر سروس":"🛡️ Safe & trusted passenger service","محفوظ ڈرائیو ٹیکسی سروس":"MAHFUZ DRIVE Taxi Service","پورے جنوبی پنجاب میں آپ کی اپنی باوقار مسافر سواری":"Your trusted ride across South Punjab","✨ اپنے الفاظ میں بتائیں":"✨ Describe your trip","مثال: کل صبح 8 بجے ہم 4 مسافر تونسہ شریف سے ملتان جانا چاہتے ہیں":"Example: Tomorrow at 8 AM, 4 passengers travelling from Taunsa Sharif to Multan","مناسب سواری تجویز کریں":"Suggest a suitable ride","لوکل (شہر کے اندر)":"Local (within city)","شہر سے شہر":"City to city","سواری منتخب کریں":"Choose your ride","موٹر سائیکل":"Motorcycle","پاسنجر رکشہ":"Passenger rickshaw","کار":"Car","منی بس":"Minibus","شہر منتخب کریں (جنوبی پنجاب)":"Select city (South Punjab)","پک اپ علاقہ (کہاں سے بیٹھنا ہے)":"Pickup area","اپنے محلے یا چوک کا نام لکھیں":"Enter your neighbourhood or landmark","ڈراپ آف علاقہ (کہاں اترنا ہے / منزل)":"Drop-off area / destination","اپنی منزل کا نام لکھیں":"Enter your destination","روانگی کا شہر (کہاں سے جانا ہے)":"Departure city","پک اپ کی مخصوص جگہ (مثلاً لاری اڈہ یا گھر کا پتہ)":"Exact pickup point (e.g. bus station or home address)","منزل کا شہر (کس شہر جانا ہے)":"Destination city","منزل کی مخصوص جگہ (مثلاً نشتر ہسپتال ملتان)":"Exact destination (e.g. Nishtar Hospital, Multan)","مسافر کا نام":"Passenger name","اپنا مکمل نام لکھیں":"Enter your full name","پاکستانی موبائل نمبر (03 سے شروع کریں)":"Pakistan mobile number (starts with 03)","مثلاً: 03001234567":"Example: 03001234567","ابھی بک کریں":"Book now","📍 جنوبی پنجاب کے اضلاع (منتخب کرنے کے لیے ٹیپ کریں)":"📍 Service areas in South Punjab (tap to select)","شہر یا علاقہ منتخب کریں":"Select a city or area","جنوبی پنجاب کے تمام اضلاع میں سروس":"Service across South Punjab districts","سروس ایریاز":"Service Areas","ڈرائیور رجسٹریشن":"Driver registration","تصدیق شدہ ڈرائیور بنیں اور محفوظ ڈرائیو کے ساتھ باوقار روزگار کمائیں":"Register as a verified driver with MAHFUZ DRIVE","🪪 ذاتی اور گاڑی کی تفصیلات":"🪪 Personal and vehicle details","مکمل نام (مطابق شناختی کارڈ)":"Full name (as shown on CNIC)","پاکستانی موبائل نمبر":"Pakistan mobile number","شہر منتخب کریں":"Select city","شناختی کارڈ نمبر (13 ہندسے بغیر ڈیش کے)":"CNIC number (13 digits, without dashes)","مثلاً: 3210312345671":"Example: 3210312345671","مسافر سواری کی قسم":"Passenger vehicle type","-- سواری منتخب کریں --":"-- Select a vehicle --","منی بس / مسافر وین":"Mini bus / passenger van","ڈرائیونگ لائسنس نمبر":"Driving licence number","اپنا ڈرائیونگ لائسنس نمبر درج کریں":"Enter your driving licence number","📸 شناختی کارڈ اور لائسنس کی تصاویر (لازمی)":"📸 CNIC and driving licence photos (required)","1. شناختی کارڈ کی فرنٹ سائیڈ":"1. CNIC front side","2. شناختی کارڈ کی بیک سائیڈ":"2. CNIC back side","3. ڈرائیونگ لائسنس کی فرنٹ سائیڈ":"3. Driving licence front side","4. ڈرائیونگ لائسنس کی بیک سائیڈ":"4. Driving licence back side","تصدیق کے لیے درخواست جمع کریں":"Submit verification request","ایپ سیٹنگز":"App settings","معلومات اور ایپ انسٹال کرنے کا طریقہ":"App information and installation","⚙️ جنرل معلومات":"⚙️ General information","سروس کی نوعیت:":"Service type:","صرف مسافر ٹیکسی سروس":"Passenger taxi service only","ایپ ورژن:":"App version:","📲 موبائل اسکرین پر ایپ لگانے کا طریقہ":"📲 Install the app on your phone","اس ایپ کو بغیر کسی سیکیورٹی وارننگ کے اپنے موبائل میں چلانے کے لیے Google Chrome کے اوپر دائیں کونے میں موجود ":"To install this app on your phone, open the Google Chrome menu in the top-right corner, then choose ","تین نقطوں (⋮)":"the three-dot menu (⋮)"," پر کلک کریں اور ":" and select "," کو دبا دیں۔":" .","شکایات و تجاویز":"Complaints & feedback","ہماری بہتری کے لیے اپنی رائے دیں یا شکایت درج کروائیں":"Share feedback or submit a complaint","آپ کا نام":"Your name","اپنا نام لکھیں":"Enter your name","شکایت یا تجویز":"Complaint or suggestion","اپنی شکایت یا تجویز یہاں تفصیل سے لکھیں...":"Describe your complaint or suggestion here...","شکایت بھیجیں":"Submit complaint","بکنگ":"Booking","ڈرائیور":"Driver","سیٹنگز":"Settings","شکایات":"Complaints","✍️ دیگر علاقہ / خود لکھیں...":"✍️ Other area / enter manually...","📍":"📍","زبان:":"Language:","لوکل":"Local","بکنگ بھیجی جا رہی ہے...":"Sending booking...","دستاویزات اپ لوڈ ہو رہی ہیں، انتظار کریں...":"Uploading documents, please wait...","شکایت بھیجی جا رہی ہے...":"Sending complaint...","ریٹنگ":"Ratings","Ratings & Reviews":"Ratings & Reviews","⭐ Verified passenger feedback":"⭐ Verified passenger feedback","✍️ Rate your completed ride":"✍️ Rate your completed ride","Rate your completed ride and help improve MAHFUZ DRIVE":"Rate your completed ride and help improve MAHFUZ DRIVE","Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.":"Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.","Booking reference":"Booking reference","Booking phone number":"Booking phone number","Choose your rating":"Choose your rating","Select a star rating":"Select a star rating","Your review (optional)":"Your review (optional)","Tell us about your ride experience...":"Tell us about your ride experience...","Submit rating":"Submit rating","💬 Recent approved reviews":"💬 Recent approved reviews","Loading passenger reviews…":"Loading passenger reviews…","approved passenger ratings":"approved passenger ratings","FAIR & TRANSPARENT PRICING":"FAIR & TRANSPARENT PRICING","Per-kilometre fare":"Per-kilometre fare","Rate will be set by the administrator":"Rate will be set by the administrator","Each vehicle category has its own rate. The final fare will be calculated from the road distance.":"Each vehicle category has its own rate. The final fare will be calculated from the road distance.","Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.":"Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.","Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel.":"Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel."};
+  const reverseTranslations = {"Admin sign in":"ایڈمن لاگ اِن","Use an existing Supabase Auth account assigned the server-controlled app_metadata role":"سرور کی طرف سے ایڈمن اجازت والے موجودہ اکاؤنٹ سے لاگ اِن کریں","Admin email":"ایڈمن ای میل","Password":"پاس ورڈ","Enter password":"پاس ورڈ درج کریں","Sign in securely":"محفوظ طریقے سے لاگ اِن کریں","Restricted access":"محدود رسائی","Secure operations dashboard":"محفوظ ایڈمن ڈیش بورڈ","Operations overview":"انتظامی جائزہ","Refresh":"تازہ کریں","Sign out":"لاگ آؤٹ","Bookings":"بکنگز","Driver applications":"ڈرائیور درخواستیں","Complaints & feedback":"شکایات اور تجاویز","Open Admin Panel":"ایڈمن پینل کھولیں","Admin controls":"ایڈمن کنٹرولز","Save status":"اسٹیٹس محفوظ کریں","Pending":"زیرِ التوا","Accepted":"منظور شدہ","Completed":"مکمل","Cancelled":"منسوخ","Approved":"منظور","Rejected":"مسترد","No records found.":"کوئی ریکارڈ موجود نہیں۔","Loading…":"لوڈ ہو رہا ہے…","You have signed out.":"آپ لاگ آؤٹ ہو چکے ہیں۔","Ratings & Reviews":"ریٹنگز اور تبصرے","⭐ Verified passenger feedback":"⭐ مسافروں کی تصدیق شدہ رائے","✍️ Rate your completed ride":"✍️ مکمل سفر کی ریٹنگ دیں","Rate your completed ride and help improve MAHFUZ DRIVE":"اپنے مکمل سفر کی ریٹنگ دیں اور محفوظ ڈرائیو کو بہتر بنائیں","Enter the booking reference shown after booking and the same phone number used for that booking. Ratings are accepted after the ride is marked completed.":"بکنگ کے بعد دیا گیا ریفرنس اور وہی فون نمبر درج کریں۔ ریٹنگ صرف سفر مکمل ہونے کے بعد دی جا سکتی ہے۔","Booking reference":"بکنگ ریفرنس","Booking phone number":"بکنگ والا فون نمبر","Choose your rating":"اپنی ریٹنگ منتخب کریں","Select a star rating":"اسٹار منتخب کریں","Your review (optional)":"آپ کا تبصرہ (اختیاری)","Tell us about your ride experience...":"اپنے سفر کے تجربے کے بارے میں بتائیں...","Submit rating":"ریٹنگ جمع کریں","💬 Recent approved reviews":"💬 حالیہ منظور شدہ تبصرے","Loading passenger reviews…":"مسافروں کے تبصرے لوڈ ہو رہے ہیں…","FAIR & TRANSPARENT PRICING":"منصفانہ اور واضح کرایہ","Per-kilometre fare":"فی کلومیٹر کرایہ","Rate will be set by the administrator":"ریٹ ایڈمن مقرر کرے گا","Each vehicle category has its own rate. The final fare will be calculated from the road distance.":"ہر گاڑی کا الگ ریٹ ہوگا۔ حتمی کرایہ سڑک کے فاصلے کے مطابق ہوگا۔","Driver earnings and MAHFUZ DRIVE commission can be configured separately in the Admin Panel.":"ڈرائیور کی کمائی اور محفوظ ڈرائیو کا کمیشن ایڈمن پینل میں الگ مقرر کیا جا سکے گا۔","Separate per-kilometre rates will be set for Motorcycle, Passenger Rickshaw, Car and Mini Bus in the Admin Panel.":"موٹر سائیکل، مسافر رکشہ، کار اور منی بس کے الگ فی کلومیٹر ریٹ ایڈمن پینل میں مقرر ہوں گے۔"};
   let activeLanguage = "en";
   const originalNodes = new WeakMap();
   const originalAttributes = new WeakMap();
@@ -1077,7 +1219,8 @@ button,.btn-green,#btn-book{border:0!important;border-radius:10px!important;back
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    const savedLanguage = "en";
+    let savedLanguage = "en";
+    try { savedLanguage = localStorage.getItem("mahfuz-drive-language") || "en"; } catch (e) {}
     setLanguage(savedLanguage);
     const observer = new MutationObserver(records => {
       if (busy) return;
